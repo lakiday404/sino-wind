@@ -1,54 +1,87 @@
-import React from 'react'
 import '../styles/home.less'
 import HomeCard from '../components/HomeCard'
 
+// 🏮 首页【雅集】数据（阶段一为静态 Mock，阶段二接入后端真实数据）
+const poem = {
+  verse: ['山水之乐，', '在乎山水之间也。'],
+  from: '—— 欧阳修《醉翁亭记》',
+  seal: '雅集',
+}
+
+const almanac = {
+  city: '杭州',
+  temp: '24°',
+  weather: '多云 空气优',
+  lunar: '农历 三月廿六',
+  ganzhi: '乙巳年 庚辰月 丙午日',
+  term: '清明',
+  termDesc: ['万物清明', '春和景明'],
+}
+
+// 四大核心雅席入口（2×2 宫格）
+const yajiEntries = [
+  { key: 'appraise', title: '博古识器', desc: '识古今之器\n赏华夏之美', seal: '藏', path: '/recognition' },
+  { key: 'debate', title: '先贤论道', desc: '与李白苏轼\n共话千年风骨', seal: '道', path: '/ai-chat' },
+  { key: 'poem', title: '飞花诗令', desc: '以诗会友\n飞花成令', seal: '诗', path: '/ai' },
+  { key: 'leisure', title: '四般闲事', desc: '焚香品茗\n插花弄趣', seal: '闲', path: '/mine' },
+]
+
 export default function Home() {
-    const quickEntries = [
-    { title: '拍照识实物', desc: '秒识身边物品，讲解用途与安全提示', tag: 'AI 识别', path: '/recognition' },
-    { title: '拍照学单词', desc: '看图记单词，语音跟读巩固记忆', tag: '英语', path: '/learn-words' },
-    { title: '古诗词天地', desc: '每日一诗，图文+朗读，助力语文启蒙', tag: '国学', path: '/learn-poem' },
-    { title: '亲子成长任务', desc: '每日 3 个小目标，亲子打卡养习惯', tag: '习惯养成', path: '/habit'  },
-    { title: '睡前故事馆', desc: 'AI 讲故事，个性化选择角色与情节', tag: '故事', path: '/sleep-story' },
-    { title: '科学小实验', desc: '安全材料，动手做实验，培养好奇心', tag: '科普', path: '/science'}
-  ];
+  // 背景：宣纸山水长卷（放在 public/assets/home/，随 base 路径解析）
+  const bgUrl = `${import.meta.env.BASE_URL}assets/home/bg-paper.jpg`
+
   return (
-   <div className="home-root">
-     <header className="home-hero">
-        <div>
-          <p className="home-hero__eyebrow">亲子教育 · 科学陪伴</p>
-          <h1>和孩子一起探索更大的世界</h1>
-          <p className="home-hero__sub">
-            AI + 内容，拍照识物、学单词、听诗词、做实验，陪伴每个好奇瞬间
+    <div className="home-root" style={{ backgroundImage: `url(${bgUrl})` }}>
+      {/* 顶部题头 */}
+      <header className="home-hero">
+        <div className="home-hero__title-row">
+          <h1 className="home-hero__title">云山竹简</h1>
+          <span className="home-hero__seal">华风</span>
+        </div>
+        <p className="home-hero__sub">读千年风雅 与君共此山河</p>
+      </header>
+
+      {/* 每日诗签 · 展开式横向卷轴 */}
+      <section className="home-poem">
+        <div className="home-poem__tag">每日诗签</div>
+        <div className="home-poem__body">
+          <p className="home-poem__verse">
+            {poem.verse.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
           </p>
-          <div className="home-hero__actions">
-            <button className='home-btn home-btn--primary'>开始探索</button>
-          </div>
-        </div>
-        <div className="home-hero__bubble">
-          <span>AI 讲解</span>
-          <span>口语跟读</span>
-          <span>安全提示</span>
-          <span>朗读诗词</span>
-          <span>亲子任务</span>
-        </div>
-     </header>
-      <section className="home-section">
-        <div className="home-section__head">
-          <div>
-            <p className="home-section__eyebrow">快捷入口</p>
-            <h2>把学习融入日常场景</h2>
-            <p className="home-section__desc">随手拍、随时学；听故事、背诗词；动手实验，护眼护耳朵</p>
-          </div>
-          <button className="home-btn home-btn--text">查看全部</button>
-        </div>
-        <div className="home-grid">
-          {
-          quickEntries.map((item) => (
-            <HomeCard key={item.tag} item={item} />
-          ))
-          }
+          <p className="home-poem__from">{poem.from}</p>
+          <span className="home-poem__seal">{poem.seal}</span>
         </div>
       </section>
-   </div>
+
+      {/* 岁时节气与干支物候 */}
+      <section className="home-almanac">
+        <div className="home-almanac__col home-almanac__col--weather">
+          <p className="home-almanac__city">{almanac.city}</p>
+          <p className="home-almanac__temp">{almanac.temp}</p>
+          <p className="home-almanac__desc">{almanac.weather}</p>
+        </div>
+        <div className="home-almanac__col home-almanac__col--lunar">
+          <p className="home-almanac__lunar">{almanac.lunar}</p>
+          <p className="home-almanac__ganzhi">{almanac.ganzhi}</p>
+        </div>
+        <div className="home-almanac__col home-almanac__col--term">
+          <p className="home-almanac__term">{almanac.term}</p>
+          <p className="home-almanac__term-desc">
+            {almanac.termDesc.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+          </p>
+        </div>
+      </section>
+
+      {/* 四大核心雅席入口 */}
+      <section className="home-grid">
+        {yajiEntries.map((item) => (
+          <HomeCard key={item.key} item={item} />
+        ))}
+      </section>
+    </div>
   )
 }
