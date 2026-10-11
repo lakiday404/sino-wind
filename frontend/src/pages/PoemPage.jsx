@@ -84,6 +84,21 @@ function toLines(text = '') {
     .filter(Boolean)
 }
 
+// 兼容后端两种字段口径：契约的 paragraphs[] 与成员 A 实现里的 content[] / content 字符串
+function toParagraphs(source) {
+  if (!source) return []
+  if (Array.isArray(source)) return source.filter((line) => typeof line === 'string' && line.trim())
+  if (typeof source === 'string') return toLines(source)
+  return []
+}
+
+// 搜索结果摘要：优先 snippet，其次 content（数组或字符串）
+function snippetOf(item) {
+  const raw = item.snippet || item.content || ''
+  const text = Array.isArray(raw) ? raw.join('') : String(raw)
+  return text.length > 46 ? `${text.slice(0, 46)}…` : text
+}
+
 export default function PoemPage() {
   const navigate = useNavigate()
   const [poem, setPoem] = useState(null)
@@ -120,7 +135,7 @@ export default function PoemPage() {
           title: data.title,
           author: data.author,
           dynasty: data.dynasty || '古代',
-          paragraphs: data.paragraphs?.length ? data.paragraphs : toLines(data.content),
+          paragraphs: toParagraphs(data.paragraphs || data.content),
           appreciation: data.appreciation || '',
           bgArt: data.bgArt || '',
         })
@@ -168,7 +183,7 @@ export default function PoemPage() {
       title: item.title,
       author: item.author,
       dynasty: item.dynasty || '古代',
-      paragraphs: item.paragraphs?.length ? item.paragraphs : toLines(item.snippet || item.content || ''),
+      paragraphs: toParagraphs(item.paragraphs || item.content || item.snippet),
       appreciation: item.appreciation || '',
     })
     setResults(null)
@@ -248,7 +263,7 @@ export default function PoemPage() {
                   <div className="poem-results__meta">
                     {item.dynasty} · {item.author}
                   </div>
-                  {item.snippet && <div className="poem-results__snippet">{item.snippet}</div>}
+                  {snippetOf(item) && <div className="poem-results__snippet">{snippetOf(item)}</div>}
                 </div>
                 <RightOutline className="poem-results__arrow" />
               </div>

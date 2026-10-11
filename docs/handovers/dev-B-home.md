@@ -147,5 +147,7 @@
 
 1. `POST /api/poem/collect` 依赖成员 A 的 `user_poems` 表与诗泉代理接口，待 `feat/phase2-backend` 合并后做一次**真实联调**（当前走 Mock 降级）。
 2. `axios` 基础地址仍为远程 `http://120.26.186.48:3000`；如要本地联调，建议统一切到 `vite.config.js` 里的 `/api` 代理（该文件非本人白名单，需组长确认）。
-3. 请求头 `Authorization` 目前由拦截器写入**裸 token**（无 `Bearer ` 前缀），而 `PHASE2_API_CONTRACT.md` 写的是 `Authorization: Bearer <token>`——**请队长/成员 A 统一口径**，否则收藏接口可能 401。
-4. 诗卷暂无「朝代/作者」筛选与分页，仅按契约实现随机与关键词搜索。
+3. **【已核实·无问题】** `Authorization` 口径：前端拦截器写**裸 token**，成员 A 的 `verifyToken` 也是读 `ctx.request.header.authorization` 裸值 → **两端一致，可正常鉴权**；仅 `PHASE2_API_CONTRACT.md` 的描述（`Bearer <token>`）与实际不符，建议队长修订文档即可。
+4. **【联调实测·需 A / C 对齐】收藏列表路由不一致（会 404）**：契约与成员 C 的 `PoemCollection.jsx` 都用 `GET /api/poem/my-list`，而成员 A 的 `poemRoutes.js` 实际实现的是 `GET /api/poem/collection` → **C 的「我的诗笺」列表将取不到数据**。建议 A 改路由名（契约 + C 两票一致），或 C 改一行调用地址。
+5. **【联调实测·字段口径差异，本人已兼容】** 成员 A 的 `poemController` 返回 `content: [...]`（**数组**）而非契约写的 `paragraphs`，搜索项**无 `snippet`**，`collect` 返回**无 `newPoemCount`** → 本人已在 `PoemPage.jsx` 增加 `toParagraphs()` / `snippetOf()` 双向兼容（两种口径均能正常渲染），**无需 A 改动**。
+6. 诗卷暂无「朝代/作者」筛选与分页，仅按契约实现随机与关键词搜索。
