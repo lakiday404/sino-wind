@@ -1,3 +1,21 @@
+@import './variables.less';
+
+.account-setting {
+  min-height: 100vh;
+  background-color: @color-bg;
+
+  &__section {
+    padding: 12px;
+
+    .adm-list {
+      background-color: @color-card;
+      border: 1px solid @color-border;
+      border-radius: @radius-card;
+      overflow: hidden;
+    }
+  }
+}
+
 .footer {
   padding: 16px;
   text-align: center;
@@ -7,11 +25,12 @@
   font-size: var(--adm-font-size-4);
   color: #fff;
   line-height: 1;
-  padding: 10px 16px;
-  background-color: rgba(153, 153, 153, 0.4);
+  padding: 10px 20px;
+  background-color: @color-seal;
   border-radius: 100px;
   display: inline-block;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(158, 42, 43, 0.4);
 }
 
 .image-render {
@@ -22,11 +41,11 @@
 }
 
 .custom-render {
-  color: #1677ff;
+  color: @color-seal;
   background: #fff;
   width: 200px;
   height: 100px;
-  border-radius: 2px;
+  border-radius: 4px;
   padding: 8px;
 }
 
@@ -35,30 +54,34 @@
   padding: 60px 30px;
   box-sizing: border-box;
   align-items: center;
+  background-color: @color-bg;
 
   &__title {
     font-size: var(--adm-font-size-10);
-    color: #333;
-    font-weight: 500;
+    color: @color-text-main;
+    font-weight: 600;
   }
 
   &__input-container {
     flex: 1;
-    font-size: 20px;
+    font-size: 18px;
     margin-bottom: 30px;
 
     input {
-      margin-top: 20px;
-      background-color: #eee;
-      padding: 4px 10px;
-      font-size: 20px;
+      margin-top: 16px;
+      background-color: #fff;
+      border: 1px solid @color-border;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 16px;
       box-sizing: border-box;
     }
   }
 }
 
 .update-nickname__confirm {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: @color-seal !important;
+  border-color: @color-seal !important;
   position: fixed;
   bottom: 30px;
   left: 50%;
@@ -66,5 +89,6 @@
   width: 80%;
   color: white;
   padding: 10px 20px;
-  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+  border-radius: 22px;
+  box-shadow: 0 2px 10px rgba(158, 42, 43, 0.3);
 }
