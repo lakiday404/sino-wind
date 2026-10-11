@@ -1,20 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Toast } from 'antd-mobile'
+import { UserOutline, LockOutline, EyeOutline, EyeInvisibleOutline } from 'antd-mobile-icons'
 import { useNavigate } from 'react-router-dom'
 import axios from '../http'
 import '../styles/login.less'
-
-export function AuthIcon({ name }) {
-  const shapes = {
-    account: 'M5 20v-2a7 7 0 0 1 14 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8',
-    phone: 'M7 2h10v20H7zM10 18h4',
-    lock: 'M6 10h12v11H6zM8 10V6a4 4 0 0 1 8 0v4M12 14v3',
-    shield: 'M12 2 3 6v6c0 5 9 10 9 10s9-5 9-10V6zM8 12l3 3 5-6',
-    eye: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
-    hidden: 'M3 3l18 18M3 9l-1 3s4 7 10 7c2 0 4-1 5-2M7 6c2-1 3-1 5-1 6 0 10 7 10 7l-3 4',
-  }
-  return <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={shapes[name]} /></svg>
-}
 
 export default function Login({ user = {}, agreed = false }) {
   const [phone, setPhone] = useState(user.phone || '')
@@ -55,13 +44,13 @@ export default function Login({ user = {}, agreed = false }) {
   }
   return (
     <form className="auth-login" onSubmit={submit} noValidate aria-busy={loading}>
-      <label className="auth-field"><span className="auth-field-icon" aria-hidden="true"><AuthIcon name="account" /></span><span className="auth-sr-only">手机号或信箱</span>
+      <label className="auth-field"><span className="auth-field-icon" aria-hidden="true"><UserOutline /></span><span className="auth-sr-only">手机号或信箱</span>
         <input name="username" autoComplete="username" type="text" inputMode="email" placeholder="请输入手机号" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={loading} aria-describedby={error ? 'login-error' : undefined} />
       </label>
-      <div className="auth-field"><span className="auth-field-icon" aria-hidden="true"><AuthIcon name="lock" /></span>
+      <div className="auth-field"><span className="auth-field-icon" aria-hidden="true"><LockOutline /></span>
         <label className="auth-sr-only" htmlFor="login-password">通行密押</label>
         <input id="login-password" name="password" autoComplete="current-password" type={visible ? 'text' : 'password'} placeholder="请输入密码" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
-        <button type="button" className="auth-eye" aria-label={visible ? '隐藏密码' : '显示密码'} aria-pressed={visible} onClick={() => setVisible(!visible)}><AuthIcon name={visible ? "eye" : "hidden"} /></button>
+        <button type="button" className="auth-eye" aria-label={visible ? '隐藏密码' : '显示密码'} aria-pressed={visible} onClick={() => setVisible(!visible)}>{visible ? <EyeOutline /> : <EyeInvisibleOutline />}</button>
       </div>
       <div className="auth-forgot"><button type="button" onClick={() => Toast.show({ content: '密码找回暂未开放，请联系管理员' })}>忘记密码？</button></div>
       {error && <p className="auth-error" id="login-error" role="alert">{error}</p>}

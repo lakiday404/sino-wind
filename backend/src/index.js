@@ -3,6 +3,7 @@ const Router = require('koa-router')
 const cors = require('@koa/cors');
 const bodyParser = require('koa-bodyparser')
 const authRoutes = require('./routes/authRoutes.js')
+const poemRoutes = require('./routes/poemRoutes.js')
 const cozeRoutes = require('./routes/coze-api.js')
 const deepseekRoutes = require('./routes/deepseek-api.js')
 const dotenv = require('dotenv')
@@ -29,6 +30,7 @@ app
   .use(bodyParser({ jsonLimit: '30mb' }))  // 先让 koa 拥有解析参数的能力，设置 JSON 最大为 30MB
   .use(router.routes(), router.allowedMethods())
   .use(authRoutes.routes(), authRoutes.allowedMethods())
+  .use(poemRoutes.routes(), poemRoutes.allowedMethods())
   .use(cozeRoutes.routes(), cozeRoutes.allowedMethods())
   .use(deepseekRoutes.routes(), deepseekRoutes.allowedMethods())
   

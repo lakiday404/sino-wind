@@ -132,7 +132,11 @@ async function getUserInfo(ctx) {
   const id = ctx.userId
   try {
     const res = await findUserById(id)
-    console.log('User info from database:', res)
+    if (!res) {
+      ctx.status = 401
+      ctx.body = { code: 0, message: '请重新入席' }
+      return
+    }
     
     const data = {
       code: 1,
@@ -140,7 +144,11 @@ async function getUserInfo(ctx) {
       create_time: res.create_time,
       phone: res.phone,
       nickname: res.nickname,
-      avatar: res.avatar
+      avatar: res.avatar,
+      appraise_count: res.appraise_count,
+      debate_count: res.debate_count,
+      poem_count: res.poem_count,
+      rank_level: res.rank_level
     }
     ctx.body = data
   } catch (error) {

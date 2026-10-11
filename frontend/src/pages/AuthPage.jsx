@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Toast } from 'antd-mobile'
+import { MessageOutline } from 'antd-mobile-icons'
 import Login from './Login'
 import Register from './Register'
 import '../styles/authPage.less'
@@ -47,9 +48,9 @@ export default function AuthPage() {
         <footer className="auth-footer">
           <p className="auth-divider"><span>第三方账号登录</span></p>
           <div className="auth-social">
-            {[['微信', 'M3 5h12v10H8l-4 3v-3H3zM11 9h10v10h-2v3l-4-3h-4'], ['QQ', 'M7 9V7a5 5 0 0 1 10 0v2l3 8h-3v3H7v-3H4zM9 7h1m4 0h1M9 11h6'], ['Apple', 'M13 6c0-3 3-4 4-4 0 3-2 4-4 4M12 8c-8-5-11 3-6 11 2 3 4 1 6 1s4 2 6-1l2-4c-4-2-4-5-1-7-3-3-5 0-7 0']].map(([name, icon]) =>
+            {['微信', 'QQ', 'Apple'].map((name) =>
               <button type="button" key={name} aria-label={name + '登录（暂未开放）'} onClick={() => unavailable(name + '登录')}>
-                <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={icon} /></svg><span>{name}</span>
+                <MessageOutline aria-hidden="true" /><span>{name}</span>
               </button>)}
           </div>
           <div className="auth-consent">
