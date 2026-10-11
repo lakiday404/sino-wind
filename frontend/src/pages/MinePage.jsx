@@ -1,100 +1,220 @@
+import React, { useState, useEffect } from 'react'
 import '../styles/minePage.less'
-import { useState, useEffect } from 'react'
-import { List, Card, ActionSheet, ImageViewer } from 'antd-mobile'
+import { ActionSheet, Toast, ImageViewer } from 'antd-mobile'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-
-
 export default function MinePage() {
-  const [visible, setVisible] = useState(false)
   const navigate = useNavigate()
   const [userInfo, setUserInfo] = useState({})
-  const [visibleImage, setVisibleImage] = useState(false)
+  const [visibleLogout, setVisibleLogout] = useState(false)
+  const [visibleAvatarViewer, setVisibleAvatarViewer] = useState(false)
 
-  const actions = [
-    { text: '确认', key: 'confirm' }
-  ]
-
-  const handleLogout = () => {
-    // 弹框
-    setVisible(true)
-  }
-
+  // 1. 获取用户信息与修持数据（带优雅的古风兜底默认值）
   useEffect(() => {
-    // 从后端获取用户信息
-    axios.get('/api/auth/info').then(res => {
-      console.log(res.data);
-      setUserInfo(res.data)
-    })
+    const token = localStorage.getItem('token')
+    if (token) {
+      axios.get('/api/auth/info', {
+        headers: { Authorization: `Bearer ${token}` }
+      }).then(res => {
+        if (res.data) setUserInfo(res.data)
+      }).catch(() => {
+        // 后端若未启动或token过期则走默认设计稿展示
+      })
+    }
   }, [])
 
+  // 退出登录操作选项
+  const logoutActions = [
+    { text: '整装离席（确认退出）', key: 'confirm', danger: true }
+  ]
+
+  const handleLogoutAction = (action) => {
+    if (action.key === 'confirm') {
+      setVisibleLogout(false)
+      localStorage.removeItem('token')
+      Toast.show({ content: '已整装离席', icon: 'success' })
+      navigate('/login')
+    }
+  }
+
+  // 雅士修持 4 大数据（优先读取后端，若无则展示设计稿数据）
+  const stats = [
+    { num: userInfo.appraise_count || 12, label: '鉴宝藏器' },
+    { num: userInfo.debate_count || 36, label: '论道问策' },
+    { num: userInfo.poem_count || 48, label: '诗签摘录' },
+    { num: userInfo.rank_level || '玖阶', label: '文风品阶' },
+  ]
+
   return (
-    <div className='mine-page-root'>
-      <header className='mine-page-header'>
-        <div className="user-info">
-          <div className="user-avatar" onClick={() => {
-            setVisibleImage(true)
-          }}>
-            {
-              userInfo.avatar ? (
-                <img src={userInfo.avatar} alt="用户头像" />
-              ) : (
-                <i className="iconfont icon-zhanghao"></i>
-              )
-            }
-          </div>
-          <div className="user-details">
-            <h2>{userInfo.nickname || '用户昵称'}</h2>
-            <p>亲子教育 AI 助手</p>
-          </div>
+    <div className='shuzhai-root'>
+      {/* 1. 顶部水墨意境题头 */}
+      <header className='shuzhai-header'>
+        <div className='shuzhai-header__title-wrap'>
+          <h1 className='shuzhai-header__title'>墨隐书斋</h1>
+          <span className='shuzhai-header__seal'>云山竹简</span>
         </div>
+        <p className='shuzhai-header__subtitle'>一卷诗书藏风雅 半窗山水养心性</p>
       </header>
 
-      <div className="mine-page-content">
-        <Card title='我的内容' headerStyle={{ height: '60px' }} className='mine-page-card'>
-          <List>
-            <List.Item prefix={<i className="iconfont icon-shoucang"></i>} onClick={() => { }}>我的收藏</List.Item>
-            <List.Item prefix={<i className="iconfont icon-liulanlishi"></i>} onClick={() => { }}>浏览历史</List.Item>
-          </List>
-        </Card>
+      {/* 2. 雅士身份大卡片 */}
+      <section className='scholar-card'>
+        <div className='scholar-card__profile'>
+          <div className='scholar-avatar' onClick={() => setVisibleAvatarViewer(true)}>
+            <img
+              src={userInfo.avatar || '/assets/shuzhai/avatar_yunshan.png'}
+              alt='雅士头像'
+              className='scholar-avatar__img'
+            />
+          </div>
+          <div className='scholar-details'>
+            <div className='scholar-details__name-row'>
+              <h2 className='scholar-name'>{userInfo.nickname || '云山居士'}</h2>
+              <span className='scholar-badge'>
+                <i className='iconfont icon-wode scholar-badge__icon'></i>
+                {userInfo.title || '翰林待诏'}
+              </span>
+            </div>
+            <p className='scholar-motto'>读千年风雅 与君共此山河</p>
+          </div>
+        </div>
 
-        <Card title='设置' headerStyle={{ height: '60px' }} className='mine-page-card'>
-          <List>
-            <List.Item prefix={<i className="iconfont icon-shezhi"></i>} onClick={() => { navigate('/accountSetting') }}>账号设置</List.Item>
-            <List.Item prefix={<i className="iconfont icon-tongzhi"></i>} onClick={() => { }}>通知设置</List.Item>
-            <List.Item prefix={<i className="iconfont icon-bangzhuzhongxin"></i>} onClick={() => { }}>帮助中心</List.Item>
-            <List.Item prefix={<i className="iconfont icon-tuichudenglu"></i>} onClick={handleLogout}>退出登录</List.Item>
-          </List>
-        </Card>
+        {/* 四列修持数据看板 */}
+        <div className='scholar-stats'>
+          {stats.map((item, idx) => (
+            <div key={idx} className='scholar-stats__item'>
+              <div className='scholar-stats__num'>{item.num}</div>
+              <div className='scholar-stats__label'>{item.label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 3. 列表卡片 1：藏品与墨卷 */}
+      <section className='shuzhai-section-card'>
+        <div className='shuzhai-section-head'>
+          <div className='shuzhai-section-head__text'>
+            <div className='shuzhai-section-head__title-wrap'>
+              <h3 className='shuzhai-section-title'>藏品与墨卷</h3>
+              <span className='shuzhai-seal'>崇雅</span>
+            </div>
+            <p className='shuzhai-section-sub'>收藏诗词珍品，留存风雅墨迹</p>
+          </div>
+          <img src='/assets/shuzhai/illus_cangpin.png' alt='插画' className='shuzhai-section-head__illus' />
+        </div>
+
+        <div className='shuzhai-list'>
+          <div className='shuzhai-list-item' onClick={() => Toast.show('藏器殿堂筹备中')}>
+            <i className='iconfont icon-zhanpin'></i>
+            <div className='shuzhai-list-item__content'>
+              <span className='shuzhai-list-item__title'>我的藏品</span>
+              <span className='shuzhai-list-item__desc'>已收藏的文物与鉴赏记录</span>
+            </div>
+            <span className='shuzhai-list-item__arrow'>&gt;</span>
+          </div>
+
+          <div className='shuzhai-list-item' onClick={() => Toast.show('诗笺录筹备中')}>
+            <i className='iconfont icon-zhinan'></i>
+            <div className='shuzhai-list-item__content'>
+              <span className='shuzhai-list-item__title'>我的诗笺</span>
+              <span className='shuzhai-list-item__desc'>收录的诗词与摘录笔记</span>
+            </div>
+            <span className='shuzhai-list-item__arrow'>&gt;</span>
+          </div>
+
+          <div className='shuzhai-list-item' onClick={() => Toast.show('创作墨卷筹备中')}>
+            <i className='iconfont icon-homework'></i>
+            <div className='shuzhai-list-item__content'>
+              <span className='shuzhai-list-item__title'>我的墨卷</span>
+              <span className='shuzhai-list-item__desc'>个人创作与读书札记</span>
+            </div>
+            <span className='shuzhai-list-item__arrow'>&gt;</span>
+          </div>
+
+          <div className='shuzhai-list-item' onClick={() => Toast.show('雅集记录筹备中')}>
+            <i className='iconfont icon-shoucang-yishoucang'></i>
+            <div className='shuzhai-list-item__content'>
+              <span className='shuzhai-list-item__title'>我的雅集</span>
+              <span className='shuzhai-list-item__desc'>参与的论道与诗会活动</span>
+            </div>
+            <span className='shuzhai-list-item__arrow'>&gt;</span>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. 列表卡片 2：书斋清规 */}
+      <section className='shuzhai-section-card'>
+        <div className='shuzhai-section-head'>
+          <div className='shuzhai-section-head__text'>
+            <div className='shuzhai-section-head__title-wrap'>
+              <h3 className='shuzhai-section-title'>书斋清规</h3>
+              <span className='shuzhai-seal'>永兴</span>
+            </div>
+            <p className='shuzhai-section-sub'>管理账号设置，守护文心印记</p>
+          </div>
+          <img src='/assets/shuzhai/illus_qinggui.png' alt='插画' className='shuzhai-section-head__illus' />
+        </div>
+
+        <div className='shuzhai-list'>
+          <div className='shuzhai-list-item' onClick={() => navigate('/accountSetting')}>
+            <i className='iconfont icon-zhanghao'></i>
+            <div className='shuzhai-list-item__content'>
+              <span className='shuzhai-list-item__title'>账号设置</span>
+              <span className='shuzhai-list-item__desc'>个人资料与账号管理</span>
+            </div>
+            <span className='shuzhai-list-item__arrow'>&gt;</span>
+          </div>
+
+          <div className='shuzhai-list-item' onClick={() => Toast.show('印章保护安全生效中')}>
+            <i className='iconfont icon-suo'></i>
+            <div className='shuzhai-list-item__content'>
+              <span className='shuzhai-list-item__title'>隐私与安全</span>
+              <span className='shuzhai-list-item__desc'>密码修改与印章保护</span>
+            </div>
+            <span className='shuzhai-list-item__arrow'>&gt;</span>
+          </div>
+
+          <div className='shuzhai-list-item' onClick={() => Toast.show('岁时节气通知已开启')}>
+            <i className='iconfont icon-tongzhi'></i>
+            <div className='shuzhai-list-item__content'>
+              <span className='shuzhai-list-item__title'>消息通知</span>
+              <span className='shuzhai-list-item__desc'>活动与系统消息设置</span>
+            </div>
+            <span className='shuzhai-list-item__arrow'>&gt;</span>
+          </div>
+
+          <div className='shuzhai-list-item' onClick={() => Toast.show('常见答疑：可向先贤畅谈')}>
+            <i className='iconfont icon-wenhao-yuankuang'></i>
+            <div className='shuzhai-list-item__content'>
+              <span className='shuzhai-list-item__title'>帮助与反馈</span>
+              <span className='shuzhai-list-item__desc'>常见问题与意见反馈</span>
+            </div>
+            <span className='shuzhai-list-item__arrow'>&gt;</span>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. 整装离席退出按钮 */}
+      <div className='shuzhai-logout-wrap'>
+        <button className='shuzhai-logout-btn' onClick={() => setVisibleLogout(true)}>
+          整 装 离 席
+        </button>
       </div>
 
+      {/* 退出登录确认弹窗 */}
       <ActionSheet
-        visible={visible}
-        actions={actions}
-        cancelText='取消'
-        onClose={() => setVisible(false)}
-        onAction={(action, index) => {
-          // console.log(action, index);
-          if (action.key === 'confirm') {
-            // 确认退出登录
-            setVisible(false)
-            localStorage.removeItem('token')
-            navigate('/login')
-          }
-        }}
+        visible={visibleLogout}
+        actions={logoutActions}
+        cancelText='留步细品'
+        onClose={() => setVisibleLogout(false)}
+        onAction={handleLogoutAction}
       />
 
+      {/* 头像大图查看器 */}
       <ImageViewer
-        classNames={{
-          mask: 'customize-mask',
-          body: 'customize-body',
-        }}
-        image={userInfo.avatar}
-        visible={visibleImage}
-        onClose={() => {
-          setVisibleImage(false)
-        }}
+        image={userInfo.avatar || '/assets/shuzhai/avatar_yunshan.png'}
+        visible={visibleAvatarViewer}
+        onClose={() => setVisibleAvatarViewer(false)}
       />
     </div>
   )
