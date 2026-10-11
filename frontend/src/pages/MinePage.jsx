@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import '../styles/minePage.less'
 import { ActionSheet, Toast, ImageViewer } from 'antd-mobile'
+import { RightOutline } from 'antd-mobile-icons'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from '../http'
 
 export default function MinePage() {
   const navigate = useNavigate()
@@ -110,7 +111,7 @@ export default function MinePage() {
               <span className='shuzhai-list-item__title'>我的藏品</span>
               <span className='shuzhai-list-item__desc'>已收藏的文物与鉴赏记录</span>
             </div>
-            <span className='shuzhai-list-item__arrow'>&gt;</span>
+            <RightOutline className='shuzhai-list-item__arrow' />
           </div>
 
           <div className='shuzhai-list-item' onClick={() => Toast.show('诗笺录筹备中')}>
@@ -119,7 +120,7 @@ export default function MinePage() {
               <span className='shuzhai-list-item__title'>我的诗笺</span>
               <span className='shuzhai-list-item__desc'>收录的诗词与摘录笔记</span>
             </div>
-            <span className='shuzhai-list-item__arrow'>&gt;</span>
+            <RightOutline className='shuzhai-list-item__arrow' />
           </div>
 
           <div className='shuzhai-list-item' onClick={() => Toast.show('创作墨卷筹备中')}>
@@ -128,7 +129,7 @@ export default function MinePage() {
               <span className='shuzhai-list-item__title'>我的墨卷</span>
               <span className='shuzhai-list-item__desc'>个人创作与读书札记</span>
             </div>
-            <span className='shuzhai-list-item__arrow'>&gt;</span>
+            <RightOutline className='shuzhai-list-item__arrow' />
           </div>
 
           <div className='shuzhai-list-item' onClick={() => Toast.show('雅集记录筹备中')}>
@@ -137,7 +138,7 @@ export default function MinePage() {
               <span className='shuzhai-list-item__title'>我的雅集</span>
               <span className='shuzhai-list-item__desc'>参与的论道与诗会活动</span>
             </div>
-            <span className='shuzhai-list-item__arrow'>&gt;</span>
+            <RightOutline className='shuzhai-list-item__arrow' />
           </div>
         </div>
       </section>
@@ -162,7 +163,7 @@ export default function MinePage() {
               <span className='shuzhai-list-item__title'>账号设置</span>
               <span className='shuzhai-list-item__desc'>个人资料与账号管理</span>
             </div>
-            <span className='shuzhai-list-item__arrow'>&gt;</span>
+            <RightOutline className='shuzhai-list-item__arrow' />
           </div>
 
           <div className='shuzhai-list-item' onClick={() => Toast.show('印章保护安全生效中')}>
@@ -171,7 +172,7 @@ export default function MinePage() {
               <span className='shuzhai-list-item__title'>隐私与安全</span>
               <span className='shuzhai-list-item__desc'>密码修改与印章保护</span>
             </div>
-            <span className='shuzhai-list-item__arrow'>&gt;</span>
+            <RightOutline className='shuzhai-list-item__arrow' />
           </div>
 
           <div className='shuzhai-list-item' onClick={() => Toast.show('岁时节气通知已开启')}>
@@ -180,7 +181,7 @@ export default function MinePage() {
               <span className='shuzhai-list-item__title'>消息通知</span>
               <span className='shuzhai-list-item__desc'>活动与系统消息设置</span>
             </div>
-            <span className='shuzhai-list-item__arrow'>&gt;</span>
+            <RightOutline className='shuzhai-list-item__arrow' />
           </div>
 
           <div className='shuzhai-list-item' onClick={() => Toast.show('常见答疑：可向先贤畅谈')}>
@@ -189,7 +190,7 @@ export default function MinePage() {
               <span className='shuzhai-list-item__title'>帮助与反馈</span>
               <span className='shuzhai-list-item__desc'>常见问题与意见反馈</span>
             </div>
-            <span className='shuzhai-list-item__arrow'>&gt;</span>
+            <RightOutline className='shuzhai-list-item__arrow' />
           </div>
         </div>
       </section>

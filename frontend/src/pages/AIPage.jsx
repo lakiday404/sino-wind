@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import '../styles/aiPage.less'
 import { useNavigate } from 'react-router-dom'
 import { Toast } from 'antd-mobile'
+import { RightOutline } from 'antd-mobile-icons'
 
 export default function AIPage() {
   const navigate = useNavigate()
@@ -105,7 +106,7 @@ export default function AIPage() {
               </div>
             </div>
             <button className='scroll-card__action-btn' title='进入'>
-              <i className='iconfont icon-arrow-right'>&gt;</i>
+              <RightOutline />
             </button>
           </div>
         ))}
