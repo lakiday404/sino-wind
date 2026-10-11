@@ -1,7 +1,8 @@
 @import '../styles/variables.less';
 
 // 🏮 公共布局与底部导航（成员 B 独占）
-// 图标：设计稿切图 assets/tabbar/*（以 mask + currentColor 着色）
+// 图标：设计稿切图 assets/tabbar/*（以 mask + currentColor 着色，激活态自动变朱砂红）
+// 多端适配：已吸收成员 C 的 PC 宽屏居中方案（width: 100%; max-width: 480px; 居中）
 .layout {
   min-height: 100vh;
   background: @color-bg;
@@ -13,16 +14,18 @@
 
 .bottom-nav {
   position: fixed;
-  left: 0;
-  right: 0;
   bottom: 0;
+  left: 50%;
+  transform: translateX(-50%); // 宽屏居中（成员 C 多端适配）
+  width: 100%;
+  max-width: 480px; // 超宽屏不超过 480px，避免底栏被拉伸
   z-index: 100;
   display: flex;
   align-items: center;
   height: 1.52rem;
   padding: 0 0.36rem calc(env(safe-area-inset-bottom) + 0.06rem);
   box-sizing: border-box;
-  background: fade(@color-card, 96%);
+  background: @color-card; // 绢帛玉白底色（#FAF7F0）
   border-top: 1px solid fade(@color-gold, 40%);
   box-shadow: 0 -0.06rem 0.24rem fade(#3a2f1d, 7%);
 

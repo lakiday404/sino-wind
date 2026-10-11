@@ -1,8 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700&display=swap');
 @import './variables.less';
 
 body {
-  font-family: 'Nunito', sans-serif;
-  background-color: @color-bg;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: @color-bg url('/assets/common/bg_guofeng.jpg') no-repeat top center / cover fixed;
   color: @color-text-main;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+// 多端视口适配核心：在 PC 端保持居中精致移动画幅，在手机端 100% 铺满
+#root {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.12);
+  background-color: transparent;
 }
