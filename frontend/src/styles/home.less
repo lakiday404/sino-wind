@@ -1,190 +1,458 @@
-.home-root{
-  padding: 32px 20px 20px 20px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',  sans-serif;
-  color: #1f1f1f;
-  background: linear-gradient(180deg, #f9fbff 0%, #f6f7fb 40%, #fff 100%);
-  .home-hero{
+@import '../styles/variables.less';
+
+// ════════════════════════════════════════════════════
+//  首页【雅集】样式（成员 B 独占）
+//  基准视口 390px，1rem = clientWidth / 10
+//  设计稿：云山竹简首页（900×1600 等比换算）
+// ════════════════════════════════════════════════════
+
+// ── 回纹描金外框（诗签卷轴 / 时令栏 / 雅席卡 通用）──
+.gu-frame(@len: 0.22rem) {
+  position: relative;
+  border: 1px solid fade(@color-gold, 48%);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: @len;
+    height: @len;
+    border: 1px solid fade(@color-gold, 70%);
+    pointer-events: none;
+  }
+
+  // 左上回纹角
+  &::before {
+    top: 0.05rem;
+    left: 0.05rem;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  // 右下回纹角
+  &::after {
+    right: 0.05rem;
+    bottom: 0.05rem;
+    border-left: none;
+    border-top: none;
+  }
+}
+
+// ── 页面根：宣纸山水长卷背景 ──────────────────────
+.home-root {
+  position: relative;
+  min-height: 100vh;
+  padding: 0.5rem 0.42rem 0.3rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  color: @color-text-main;
+  font-family: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', serif;
+  background-color: @color-bg;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% 100%;
+  background-attachment: fixed;
+
+  // 极淡宣纸罩层（保留山水质感，仅用于统一色调）
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: fade(@color-bg, 14%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// ── 顶部题头 ─────────────────────────────────────
+.home-hero {
+  padding: 0.18rem 0 0.3rem;
+  text-align: center;
+
+  &__title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.1rem;
+  }
+
+  &__title {
+    font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+    font-size: 0.86rem;
+    font-weight: 700;
+    letter-spacing: 0.06rem;
+    line-height: 1.1;
+    color: #1b1c1f;
+    text-shadow: 0 0.02rem 0.08rem fade(#fdfaf3, 85%);
+  }
+
+  // 朱砂小印【华风】
+  &__seal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.36rem;
+    height: 0.5rem;
+    margin-top: 0.06rem;
+    background: @color-seal;
+    color: #fff;
+    font-size: 0.19rem;
+    line-height: 1.05;
+    writing-mode: vertical-rl;
+    border-radius: 2px;
+  }
+
+  &__sub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.14rem;
+    margin-top: 0.18rem;
+    font-size: 0.32rem;
+    letter-spacing: 0.03rem;
+    color: #3d3a35;
+    text-shadow: 0 0.01rem 0.05rem fade(#fdfaf3, 90%);
+
+    &::before,
+    &::after {
+      content: '';
+      width: 0.86rem;
+      height: 1px;
+      background: fade(@color-gold, 60%);
+    }
+  }
+}
+
+// ── 每日诗签 · 横向卷轴（两端木轴 + 朱砂挂签 + 右侧山水）──
+.home-poem {
+  .gu-frame(0.2rem);
+  display: flex;
+  align-items: stretch;
+  height: 3.05rem;
+  background: @color-card;
+  border-radius: @radius-card;
+  box-shadow: 0 0.1rem 0.26rem fade(#3a2f1d, 10%);
+  overflow: hidden;
+
+  // 两端木轴
+  &__roller {
+    flex: none;
+    width: 0.42rem;
+    background: linear-gradient(90deg, #c9a878 0%, #e6cfa6 45%, #c9a878 100%);
+    box-shadow: inset -1px 0 0 fade(#8a6a3d, 45%);
+
+    &--right {
+      background: linear-gradient(90deg, #c9a878 0%, #e6cfa6 55%, #c9a878 100%);
+      box-shadow: inset 1px 0 0 fade(#8a6a3d, 45%);
+    }
+  }
+
+  // 朱砂竖挂签
+  &__tag {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    width: 0.5rem;
+    height: 82%;
+    margin-left: 0.1rem;
+    background: @color-seal;
+    color: #fff;
+    font-size: 0.29rem;
+    letter-spacing: 0.06rem;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    border-radius: 2px;
+  }
+
+  &__body {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 24px;
-    box-shadow: 0px 12px 40px rgba(0, 0, 0, 0.06);
-    border-radius: 20px;
-    background: radial-gradient(circle at 20% 20%, #fef3e6 0, transparent 35%),
-                radial-gradient(circle at 90% 10%, #e6f7ff 0, transparent 40%),
-                #fff;
-    &__eyebrow{
-      font-size: 0.35rem;
-      color: #ff7a45;
-      font-weight: 600;
-    }
-    h1{
-      margin: 6px 0 8px 0;
-      font-size: 0.64rem;
-      line-height: 1.3;
-      font-weight: 600;
-    }
-    &__sub{
-      color: #555;
-      line-height: 1.6;
-      font-size: 0.373rem;
-    }
-    &__actions{
-      margin-top: 8px;
-      .home-btn--primary{
-        background-color: #ff7a45;
-        color: #fff;
-        box-shadow: 0 8px 20px #ff7a454d;
-        border: none;
-        padding: 10px 16px;
-        font-size: 0.373rem;
-        border-radius: 50px;
-      }
-    }
-    &__bubble{
+    justify-content: center;
+    padding: 0.2rem 0.1rem 0.2rem 0.24rem;
+    min-width: 0;
+  }
+
+  &__verse {
+    display: flex;
+    flex-direction: column;
+    gap: 0.06rem;
+    font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+    font-size: 0.48rem;
+    line-height: 1.55;
+    letter-spacing: 0.02rem;
+    color: #1b1c1f;
+
+    // 诗句旁的闲章
+    .home-poem__seal {
+      align-self: flex-end;
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      span{
-        background-color: #f6f6f6;
-        color: #444;
-        padding: 6px 12px;
-        border-radius: 12px;
-        font-size: 0.32rem;
-      }
+      align-items: center;
+      justify-content: center;
+      width: 0.34rem;
+      height: 0.34rem;
+      margin-top: -0.3rem;
+      border: 1px solid @color-seal;
+      border-radius: 2px;
+      color: @color-seal;
+      font-size: 0.17rem;
+      font-style: normal;
+      line-height: 1.05;
+      writing-mode: vertical-rl;
     }
   }
-  .home-section {
-  margin-top: 28px;
+
+  &__from {
+    margin-top: 0.16rem;
+    padding-left: 0.5rem;
+    font-size: 0.28rem;
+    color: #4a463f;
+  }
+
+  // 右侧山水小景（柔和融入宣纸）
+  &__art {
+    flex: none;
+    width: 1.05rem;
+    margin-left: 0.06rem;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: cover;
+    opacity: 0.92;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 35%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 35%);
+  }
 }
 
-.home-section__head {
+// ── 岁时节气与干支物候 ────────────────────────────
+.home-almanac {
+  .gu-frame(0.18rem);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  height: 2.05rem;
+  margin-top: 0.24rem;
+  padding: 0.16rem 0.12rem;
+  box-sizing: border-box;
+  background: @color-card;
+  border-radius: @radius-card;
+  box-shadow: 0 0.08rem 0.22rem fade(#3a2f1d, 8%);
 
-  h2 {
-    margin: 4px 0 2px;
-    font-size: 20px;
-    font-weight: 500;
+  &__col {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.04rem;
+    padding: 0 0.08rem;
+    text-align: center;
+  }
+
+  &__col + &__col::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 14%;
+    bottom: 14%;
+    width: 1px;
+    background: fade(@color-gold, 35%);
+  }
+
+  &__city {
+    position: relative;
+    font-size: 0.29rem;
+    color: #3d3a35;
+  }
+
+  &__caret {
+    margin-left: 0.05rem;
+    font-size: 0.24rem;
+    color: fade(@color-text-sub, 80%);
+  }
+
+  &__weather {
+    display: flex;
+    align-items: center;
+    gap: 0.08rem;
+  }
+
+  &__icon {
+    width: 0.62rem;
+    height: 0.62rem;
+    fill: none;
+    stroke: @color-gold;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+
+  &__temp {
+    font-size: 0.6rem;
+    font-weight: 600;
+    line-height: 1;
+    color: #1b1c1f;
+  }
+
+  &__desc {
+    font-size: 0.25rem;
+    color: @color-text-sub;
+  }
+
+  &__lunar {
+    font-size: 0.32rem;
+    color: #1b1c1f;
+  }
+
+  &__ganzhi {
+    margin-top: 0.06rem;
+    font-size: 0.25rem;
+    color: @color-text-sub;
+  }
+
+  &__term {
+    position: relative;
+    font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+    font-size: 0.46rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: #1b1c1f;
+  }
+
+  &__seal {
+    position: absolute;
+    top: -0.02rem;
+    right: 0.02rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.26rem;
+    height: 0.36rem;
+    background: @color-seal;
+    color: #fff;
+    font-size: 0.14rem;
+    font-style: normal;
+    line-height: 1.05;
+    writing-mode: vertical-rl;
+    border-radius: 2px;
+  }
+
+  &__term-desc {
+    display: flex;
+    flex-direction: column;
+    gap: 0.02rem;
+    margin-top: 0.1rem;
+    font-size: 0.25rem;
+    line-height: 1.5;
+    color: @color-text-sub;
   }
 }
 
-.home-section__eyebrow {
-  margin: 0;
-  font-size: 12px;
-  color: #7c7c7c;
-}
-
-.home-section__desc {
-  margin: 4px 0 0;
-  color: #666;
-  font-size: 13px;
-}
-
+// ── 四大核心雅席入口（2×2 宫格：左文右图）──────────
 .home-grid {
-  margin-top: 14px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.14rem;
+  margin-top: 0.24rem;
 }
 
 .home-card {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.05);
+  .gu-frame(0.18rem);
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  h3 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 500;
-  }
-
-  p {
-    margin: 0;
-    color: #666;
-    font-size: 13px;
-    line-height: 1.5;
-  }
-}
-
-.home-card__tag {
-  display: inline-block;
-  background: #fff2e8;
-  color: #ff7a45;
-  border-radius: 10px;
-  padding: 4px 8px;
-  font-size: 12px;
-  width: max-content;
-}
-
-.home-recos {
-  margin-top: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.home-recos__item {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.05);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-
-  h3 {
-    margin: 0 0 6px;
-    font-size: 16px;
-  }
-
-  p {
-    margin: 0;
-    color: #666;
-    font-size: 13px;
-  }
-}
-
-.home-btn {
-  border: none;
-  border-radius: 999px;
-  padding: 10px 16px;
-  font-size: 14px;
+  align-items: stretch;
+  height: 2.87rem;
+  background: @color-card;
+  border-radius: @radius-card;
+  box-shadow: 0 0.08rem 0.22rem fade(#3a2f1d, 8%);
+  overflow: hidden;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 
-  &--primary {
-    background: #ff7a45;
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 0.04rem 0.12rem fade(#3a2f1d, 12%);
+  }
+
+  &__body {
+    flex: 1.02;
+    display: flex;
+    flex-direction: column;
+    padding: 0.26rem 0.1rem 0.24rem 0.26rem;
+    min-width: 0;
+  }
+
+  // 朱砂红标题
+  &__title {
+    font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
+    font-size: 0.46rem;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: 0.02rem;
+    color: @color-seal;
+  }
+
+  &__desc {
+    display: flex;
+    flex-direction: column;
+    gap: 0.04rem;
+    margin-top: 0.16rem;
+    font-size: 0.3rem;
+    line-height: 1.4;
+    color: #3d3a35;
+
+    span {
+      display: block;
+    }
+  }
+
+  &__chevron {
+    margin-left: 0.06rem;
+    font-size: 0.32rem;
+    color: fade(@color-text-sub, 85%);
+    font-style: normal;
+  }
+
+  // 朱砂方角按钮
+  &__enter {
+    align-self: flex-start;
+    margin-top: auto;
+    padding: 0.1rem 0.24rem;
+    background: @color-seal;
+    border: none;
+    border-radius: @radius-seal;
     color: #fff;
-    box-shadow: 0 8px 20px rgba(255, 122, 69, 0.3);
+    font-family: inherit;
+    font-size: 0.29rem;
+    letter-spacing: 0.04rem;
+    cursor: pointer;
   }
 
-  &--ghost {
-    background: #fff;
-    color: #444;
-    border: 1px solid #eee;
+  &__arrow {
+    font-size: 0.3rem;
+    line-height: 1;
   }
 
-  &--text {
-    background: transparent;
-    color: #ff7a45;
-    padding: 8px 0;
-    white-space: nowrap;
-  }
+  &__art {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
 
-  &--small {
-    background: #f5f5f5;
-    color: #444;
-    padding: 8px 12px;
-    font-size: 13px;
-    white-space: nowrap;
+    img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+    }
   }
-}
 }

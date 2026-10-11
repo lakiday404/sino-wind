@@ -1,49 +1,50 @@
-import { useState } from 'react'
 import '../styles/layout.less'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
+
+// 🏮 公共底部导航（三栏：雅集 / 观藏 / 书斋）
+// 器物图标使用设计稿切图（assets/tabbar/*），以 CSS mask + currentColor 着色，
+// 因此激活态可直接随文字颜色变为朱砂红，无需第二套图片。
+const BASE = import.meta.env.BASE_URL
 
 const tabs = [
-  { id: 'home', path: '/home', name: '首页', icon: 'icon-shouye', },
-  { id: 'ai', path: '/ai', name: 'AI小伙伴', icon: 'icon-bot', isHightLighted: true },
-  { id: 'mine', path: '/mine', name: '我的', icon: 'icon-wode' }
+  { id: 'home', path: '/home', name: '雅集', icon: 'tabbar-yaji.png' },
+  { id: 'ai', path: '/ai', name: '观藏', icon: 'tabbar-guancang.png' },
+  { id: 'mine', path: '/mine', name: '书斋', icon: 'tabbar-shuzhai.png' },
 ]
 
 export default function Layout() {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState(() => {
-    // console.log(window.location.pathname);
-    const rest = tabs.filter((tab) => {
-      return tab.path === window.location.pathname
-    })
-    return rest[0]?.id || 'home'
-  })
+  const { pathname } = useLocation()
+  const activeTab = tabs.find((tab) => pathname.startsWith(tab.path))?.id || 'home'
 
   return (
-    <div className='layout'>
+    <div className="layout">
       <div className="layout-page">
         {/* 凡是 layout 的二级路由都展示在这里 */}
-        <Outlet></Outlet>
+        <Outlet />
       </div>
 
-      <div className="bottom-nav">
-        {
-          tabs.map((tab) => (
-            <div
-              key={tab.id}
-              className={`bottom-nav__item ${tab.isHightLighted ? 'hightLighted' : ''} ${activeTab === tab.id ? 'active' : ''}`}
-              onClick={() => {
-                setActiveTab(tab.id)
-                navigate(tab.path)
-              }}
+      <nav className="bottom-nav">
+        {tabs.map(({ id, path, name, icon }) => {
+          const iconUrl = `url(${BASE}assets/tabbar/${icon})`
+          return (
+            <button
+              key={id}
+              type="button"
+              className={`bottom-nav__item ${activeTab === id ? 'is-active' : ''}`}
+              onClick={() => navigate(path)}
             >
-              <div className="bottom-nav__icon-container">
-                <i className={`iconfont ${tab.icon}`}></i>
-              </div>
-              <span className="bottom-nav__label">{tab.name}</span>
-            </div>
-          ))
-        }
-      </div>
+              <span
+                className="bottom-nav__icon"
+                style={{ WebkitMaskImage: iconUrl, maskImage: iconUrl }}
+                aria-hidden="true"
+              />
+              <span className="bottom-nav__label">{name}</span>
+              <i className="bottom-nav__underline" aria-hidden="true" />
+            </button>
+          )
+        })}
+      </nav>
     </div>
   )
 }
