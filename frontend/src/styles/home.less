@@ -276,8 +276,10 @@
   }
 
   &__caret {
-    margin-left: 0.05rem;
-    font-size: 0.24rem;
+    width: 0.28rem;
+    height: 0.28rem;
+    margin-left: 0.04rem;
+    vertical-align: -0.02rem;
     color: fade(@color-text-sub, 80%);
   }
 
@@ -414,11 +416,13 @@
     }
   }
 
+  // 矢量化箭头图标（antd-mobile-icons 靠 width/height 定尺寸，不随 font-size）
   &__chevron {
+    width: 0.26rem;
+    height: 0.26rem;
     margin-left: 0.06rem;
-    font-size: 0.32rem;
+    vertical-align: -0.03rem;
     color: fade(@color-text-sub, 85%);
-    font-style: normal;
   }
 
   // 朱砂方角按钮
@@ -437,8 +441,9 @@
   }
 
   &__arrow {
-    font-size: 0.3rem;
-    line-height: 1;
+    width: 0.26rem;
+    height: 0.26rem;
+    vertical-align: -0.03rem;
   }
 
   &__art {

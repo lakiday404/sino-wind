@@ -1,8 +1,9 @@
 import './index.less'
 import { useEffect, useRef, useState } from 'react'
+import { SoundOutline } from 'antd-mobile-icons'
 
+// 🏺 博古识器 · 识别结果（文博品鉴话术，图标统一 antd-mobile-icons）
 export default function Index({ recognitionResult }) {
-    console.log(recognitionResult);
   const data = recognitionResult?.data || {}
   const audioElement = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -20,25 +21,28 @@ export default function Index({ recognitionResult }) {
       setIsPlaying(true)
     }
   }
-  
+
   return <div>
     {
       (
         <div className="object-recognition-result result-container">
           <div className="object-recognition-result__header">
-            <h2>识别结果</h2>
+            <h2>金石鉴赏</h2>
             <div className='object-recognition-result__voice' onClick={handleVoicePlay}>
-              <i className='iconfont icon-yinliang-F' style={{ color: isPlaying ? '#ff7a45' : '#515151' }}></i>
+              <SoundOutline
+                className='object-recognition-result__voice-icon'
+                style={{ color: isPlaying ? '#9E2A2B' : '#515151' }}
+              />
             </div>
           </div>
           <div className="object-recognition-result__content">
             <div className='object-recognition-result__description'>
-              <h4>物品介绍</h4>
-              <p>{data?.image_description || '暂无介绍'}</p>
+              <h4>器物考释</h4>
+              <p>{data?.image_description || '暂无考释'}</p>
             </div>
             <div className='object-recognition-result__safety'>
-              <h4>安全提示</h4>
-              <p>{data?.safety || '暂无安全提示'}</p>
+              <h4>文人品鉴心得</h4>
+              <p>{data?.safety || '暂无品鉴心得'}</p>
             </div>
           </div>
           <audio src={data?.audio_url || null} ref={audioElement}></audio>

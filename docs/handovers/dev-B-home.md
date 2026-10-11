@@ -93,3 +93,59 @@
 3. **PR 待提**：分支已推送至 `origin/feat/phase1-home`；PR 入口 https://github.com/ki123-gif/sino-wind/pull/new/feat/phase1-home
 4. **整站视觉统一尚未达成**：`AuthPage/Login/Register`（成员 A）与 `AIPage/MinePage`（成员 C）仍为旧版亲子教育风格，需两位同学完成后才能通过 M3「全站视觉走通」验收（本人在白名单军规下不越界修改）。
 5. 若设计组后续提供**独立器物图标切图**（建议 2 倍图、透明底、单图 ≤200KB），直接替换 `assets/tabbar/` 同名文件即可；雅席插画同理替换 `assets/home/yaji-*.jpg`。
+
+---
+
+# 📌 记录三：2026-10-12 · 第二阶段 Day 1（缺陷清零 + 古诗词天地）
+
+* **工作分支**：`feat/phase2-frontend-poem`（基于 `main@283ca7c`）
+* **依据文档**：`TRD_DAY1.md`（队长派发）、`docs/PHASE2_API_CONTRACT.md`（接口契约）
+* **今日完成度**：第一阶段缺陷整改 100% ／ 新页面开发 100%
+
+### 一、 第一阶段缺陷清零（队长点名项 + 自查扩展）
+
+| # | 队长点名问题 | 处理结果 |
+| :---: | :--- | :--- |
+| 1 | `Home.jsx` 原生字符 `⌄` | ✅ 改为 `<DownOutline className="home-almanac__caret" />`；`home.less` 同步改为宽高定尺寸（antd-mobile-icons 为 `1em` 机制，不再依赖 font-size） |
+| 2 | 首页路由断层（飞花诗令→观藏、四般闲事→个人中心） | ✅ 飞花诗令 → `/poem`；四般闲事 → 古风 Toast「焚香点茶筹备中，静候雅聚」（`HomeCard` 新增 `onClick` 分支，不再跳个人中心） |
+| 3 | **自查扩展**：首页卡片 `›` 文本箭头（同类违规） | ✅ `HomeCard.jsx` 两处 `›` 全部替换为 `<RightOutline />`，主动避免 PR 被打回 |
+| 4 | `imageCaptureAndProcess` 少儿橙 + 旧标题 | ✅ `#ff7a45` → 朱砂 `#9E2A2B`；渐变 → 宣纸绢帛；标题改「博古识器 · 拍照品鉴」；返回/清除/拍照/上传 → `<LeftOutline/>` `<CloseOutline/>` `<CameraOutline/>` `<PictureOutline/>` |
+| 5 | `recognitionResult` 少儿话术与配色 | ✅「物品介绍 / 安全提示」→「金石鉴赏 / 器物考释 / 文人品鉴心得」；音量 → `<SoundOutline/>`；黄 `#ffd166`、粉 `#ff6b6b`、蓝 `#1976d2`、橙 `#ff9800` 全部换为国风 token 色 |
+| 6 | `AiChat` 机器人图标 + 无先贤人设 | ✅ 图标矢量化（`LeftOutline/MoreOutline/SoundOutline/SendOutline`）、移除机器人图标、读取 `location.state.sageId` 动态显示「先贤名号 · 称号」并致以古风欢迎语；请求体补 `sageId` 对齐后端契约 |
+
+### 二、 新增【古诗词天地】页面（路由 `/poem`）
+
+* **新增文件**：`frontend/src/pages/PoemPage.jsx`、`frontend/src/styles/poem.less`
+* **注册路由**：`App.jsx`（新增 1 行 import + 1 行 `<Route path='/poem'>`，最小改动以降低与他人的冲突面）
+* **四大必备要素**：
+  1. **顶部搜索框**：`antd-mobile` `SearchBar` + `<SearchOutline />`（支持回车检索与清空，检索结果可点选陈列）；
+  2. **宣纸诗卷主体**：诗名（楷体朱砂）+ 朝代竹绿方签 + 作者 + 描金分割线 + 正文**对仗断句逐句居中** + 右下角山水水印；
+  3. **四大功能按钮（全量矢量图标，零死图片）**：换一首 `<RedoOutline/>`、摘录入卷 `<HeartOutline/>`、诗意赏析 `<ContentOutline/>`、返回雅集 `<LeftOutline/>`；
+  4. **摘录数据闭环**：`POST /api/poem/collect` → **朱砂印章下压动效**（`@keyframes poem-stamp-press`）+ 成功 Toast + 回显「诗笺共 N 篇」。
+* **接口对接**：`GET /api/poem/random`、`GET /api/poem/search?q=`、`POST /api/poem/collect`（未登录时友好提示「请先入席登录，方可摘录入卷」）。
+* **优雅降级**：后端未就绪 / 网络异常时自动展示内置诗库（4 首名篇），**页面永不空白**。
+
+### 三、 自查数据（CDP 真机 390×844 视口实测）
+
+| 检测项 | 首页【雅集】 | 古诗词天地 |
+| :--- | :--- | :--- |
+| `rem` 基准 | 39px ✅ | 39px ✅ |
+| 横向溢出 `scrollWidth > clientWidth` | false ✅ | false ✅ |
+| **矢量图标数 / 残留 iconfont** | 3 / **0** ✅ | 8 / **0** ✅ |
+| 关键尺寸 | 卡片 176×114 ✅ | 搜索栏 357×36、诗卷 357×217、按钮区 357×84（4 键）✅ |
+| `npm run build` | 0 报错 ✅ | 0 报错 ✅ |
+
+> ⚠️ 测试环境说明：本机代理未运行时，控制台会出现 `at.alicdn.com`（队友 Iconfont CDN）与远程接口 `120.26.186.48:3000` 的 `ERR_PROXY_CONNECTION_FAILED` 网络报错——属**环境问题，非代码缺陷**；本页 Mock 降级已确保页面完整可用。
+
+### 四、 ⚠️ 需队长确认的一处规范偏差（重要）
+
+队长图标速查表中的 **`BookOutline` 在 `antd-mobile-icons@0.3.0` 中并不存在**（已逐一核对包内 152 个图标文件）。
+→ 本人「诗意赏析」按钮**改用 `<ContentOutline />`**（文档/内容语义最贴近，折叠条同步使用）。
+**建议队长同步修订 `TRD_DAY1.md` 的图标表**，避免成员 A / C 后续也踩到该不存在的图标而导致构建报错。
+
+### 五、 遗留与待联调
+
+1. `POST /api/poem/collect` 依赖成员 A 的 `user_poems` 表与诗泉代理接口，待 `feat/phase2-backend` 合并后做一次**真实联调**（当前走 Mock 降级）。
+2. `axios` 基础地址仍为远程 `http://120.26.186.48:3000`；如要本地联调，建议统一切到 `vite.config.js` 里的 `/api` 代理（该文件非本人白名单，需组长确认）。
+3. 请求头 `Authorization` 目前由拦截器写入**裸 token**（无 `Bearer ` 前缀），而 `PHASE2_API_CONTRACT.md` 写的是 `Authorization: Bearer <token>`——**请队长/成员 A 统一口径**，否则收藏接口可能 401。
+4. 诗卷暂无「朝代/作者」筛选与分页，仅按契约实现随机与关键词搜索。

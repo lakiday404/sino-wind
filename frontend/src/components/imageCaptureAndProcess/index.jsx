@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import './index.less'
 import { useNavigate } from 'react-router-dom'
+import { LeftOutline, CloseOutline, CameraOutline, PictureOutline } from 'antd-mobile-icons'
 
 
 export default function Index({ 
@@ -16,21 +17,21 @@ export default function Index({
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
 
-  // 主题颜色配置
+  // 主题颜色配置（国风：朱砂印泥红 / 沉金 / 宣纸绢帛，禁用旧版少儿橙）
   const themeConfig = {
     default: {
-      primary: '#ff7a45',
-      secondary: '#f5f5f5',
-      loading: '#ff6b6b',
-      voice: '#ffd166',
-      gradient: ['#fef3e6', '#e6f7ff']
+      primary: '#9E2A2B',
+      secondary: '#FAF7F0',
+      loading: '#9E2A2B',
+      voice: '#C59B27',
+      gradient: ['#FAF7F0', '#F5F0E6']
     },
     green: {
-      primary: '#4caf50',
-      secondary: '#f5f5f5', 
-      loading: '#4caf50',
-      voice: '#4caf50',
-      gradient: ['#e8f5e8', '#fff3e0']
+      primary: '#3A5A40',
+      secondary: '#FAF7F0',
+      loading: '#3A5A40',
+      voice: '#C59B27',
+      gradient: ['#F5F0E6', '#FAF7F0']
     }
   };
   const currentTheme = themeConfig[theme] || themeConfig.default
@@ -93,29 +94,29 @@ export default function Index({
     <div className='image-capture-root'>
       <header className='image-capture-header'>
         <button className='image-capture-header__back' onClick={() => navigate(-1)}>
-          <i className='iconfont icon-fanhui'></i>
+          <LeftOutline />
         </button>
-        <h1>AI 拍照识物</h1>
+        <h1>博古识器 · 拍照品鉴</h1>
         <div className="image-capture-header__placeholder"></div>
       </header>
 
       <main className="image-capture-main">
         <section className="image-capture-preview" style={{background: `radial-gradient(circle at 20% 20%, ${currentTheme.gradient[0]} 0, transparent 35%),
                       radial-gradient(circle at 90% 10%, ${currentTheme.gradient[1]} 0, transparent 40%),
-                      #ffffff`}}
+                      #FAF7F0`}}
         >
           {
             selectedImage ? (
               <div className="image-capture-preview__image-container">
                 <img src={selectedImage} alt="" className='image-capture-preview__image' />
                 <button className='image-capture-preview__clear' onClick={handleClear}>
-                  <i className="iconfont icon-close"></i>
+                  <CloseOutline />
                 </button>
               </div>
             ) : (
               <div className="image-capture-preview__placeholder">
-                <i className='iconfont icon-image'></i>
-                <p>点击下方按钮拍照或上传图片</p>
+                <PictureOutline className='image-capture-preview__placeholder-icon' />
+                <p>轻触下方按钮，拍摄或上传器物影像</p>
               </div>
             )
           }
@@ -127,14 +128,14 @@ export default function Index({
             style={{backgroundColor: currentTheme.primary}}
             onClick={handleTakePhoto}
           >
-            <i className="iconfont icon-xiangji"></i>
+            <CameraOutline />
             拍照
           </button>
           <button 
             className='image-capture-btn image-capture-btn--secondary'
             onClick={() => fileInputRef.current.click()}
           >
-            <i className="iconfont icon-shangchuan"></i>
+            <PictureOutline />
             上传图片
           </button>
 

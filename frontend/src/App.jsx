@@ -8,6 +8,7 @@ import Recognition from './pages/Recognition'
 import AccountSetting from './pages/AccountSetting'
 import AiChat from './pages/AiChat'
 import AuthPage from './pages/AuthPage'
+import PoemPage from './pages/PoemPage'
 
 export default function App() {
   return (
@@ -24,6 +25,8 @@ export default function App() {
         </Route>
         <Route path='/accountSetting' element={<AccountSetting/>}></Route>
         <Route path='/ai-chat' element={<AiChat/>}></Route>
+        {/* 成员 B：古诗词天地（首页「飞花诗令」入口） */}
+        <Route path='/poem' element={<PoemPage/>}></Route>
       </Routes>
     </BrowserRouter>
   )
