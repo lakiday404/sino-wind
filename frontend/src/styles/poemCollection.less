@@ -1,0 +1,431 @@
+@import './variables.less';
+
+.poem-collection-root {
+  min-height: 100vh;
+  background-color: @color-bg;
+  padding-bottom: 2rem;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  color: @color-text-main;
+}
+
+// 顶部题头
+.collection-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.4rem;
+  background-color: fade(@color-bg, 95%);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid fade(@color-gold, 35%);
+
+  &__back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.8rem;
+    height: 0.8rem;
+    background: transparent;
+    border: none;
+    font-size: 0.52rem;
+    color: @color-seal;
+    cursor: pointer;
+    padding: 0;
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  &__title-box {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  &__title {
+    font-size: 0.48rem;
+    font-weight: 700;
+    margin: 0;
+    font-family: 'STKaiti', 'KaiTi', 'Songti SC', serif;
+    color: @color-text-main;
+    letter-spacing: 0.04rem;
+  }
+
+  &__seal {
+    font-size: 0.26rem;
+    color: @color-seal;
+    border: 1px solid @color-seal;
+    padding: 0.02rem 0.08rem;
+    border-radius: 0.04rem;
+    transform: scale(0.9);
+  }
+
+  &__count {
+    font-size: 0.32rem;
+    color: @color-text-sub;
+    font-family: 'STKaiti', 'KaiTi', serif;
+  }
+}
+
+// 搜索栏
+.collection-search-wrap {
+  padding: 0.3rem 0.4rem 0.1rem;
+}
+
+.collection-search-box {
+  display: flex;
+  align-items: center;
+  background: @color-card;
+  border: 1px solid fade(@color-gold, 45%);
+  border-radius: 0.2rem;
+  padding: 0.18rem 0.3rem;
+  box-shadow: 0 0.04rem 0.12rem rgba(0, 0, 0, 0.03);
+
+  .collection-search-icon {
+    font-size: 0.42rem;
+    color: @color-seal;
+    margin-right: 0.2rem;
+    flex-shrink: 0;
+  }
+
+  .collection-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.36rem;
+    color: @color-text-main;
+    outline: none;
+
+    &::placeholder {
+      color: fade(@color-text-sub, 70%);
+      font-size: 0.34rem;
+    }
+  }
+
+  .collection-search-clear {
+    border: none;
+    background: transparent;
+    font-size: 0.42rem;
+    color: @color-text-sub;
+    cursor: pointer;
+    padding: 0 0.1rem;
+  }
+}
+
+// 诗卷列表
+.collection-list {
+  padding: 0.3rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+// 单张诗卷卡片
+.poem-card {
+  position: relative;
+  background: @color-card;
+  border: 1px solid fade(@color-gold, 45%);
+  border-radius: 0.22rem;
+  padding: 0.4rem;
+  box-shadow: 0 0.06rem 0.2rem rgba(58, 47, 29, 0.06);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:active {
+    transform: translateY(0.04rem);
+    box-shadow: 0 0.02rem 0.08rem rgba(58, 47, 29, 0.08);
+  }
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px dashed fade(@color-gold, 35%);
+    padding-bottom: 0.2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  &__title {
+    font-size: 0.44rem;
+    font-weight: 700;
+    color: @color-text-main;
+    font-family: 'STKaiti', 'KaiTi', 'Songti SC', serif;
+    margin: 0;
+  }
+
+  &__seal {
+    font-size: 0.24rem;
+    color: @color-seal;
+    border: 1px solid @color-seal;
+    padding: 0 0.08rem;
+    border-radius: 0.04rem;
+    font-family: 'STKaiti', 'KaiTi', serif;
+  }
+
+  &__author {
+    font-size: 0.32rem;
+    color: @color-text-sub;
+    font-family: 'STKaiti', 'KaiTi', serif;
+  }
+
+  &__excerpt {
+    font-size: 0.38rem;
+    line-height: 1.6;
+    color: @color-text-main;
+    font-family: 'Songti SC', 'STSong', serif;
+    margin: 0 0 0.3rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.3rem;
+    color: @color-text-sub;
+  }
+
+  &__date {
+    font-size: 0.28rem;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  &__del-btn {
+    border: none;
+    background: transparent;
+    color: fade(@color-text-sub, 70%);
+    font-size: 0.28rem;
+    cursor: pointer;
+    padding: 0;
+
+    &:active {
+      color: @color-seal;
+    }
+  }
+
+  &__read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.06rem;
+    color: @color-seal;
+    font-size: 0.32rem;
+    font-weight: 600;
+
+    svg {
+      font-size: 0.3rem;
+    }
+  }
+}
+
+// 空状态
+.collection-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 0.5rem;
+  text-align: center;
+
+  &__icon {
+    font-size: 1.5rem;
+    color: fade(@color-gold, 60%);
+    margin-bottom: 0.3rem;
+  }
+
+  &__text {
+    font-size: 0.4rem;
+    color: @color-text-sub;
+    margin: 0 0 0.5rem;
+    font-family: 'STKaiti', 'KaiTi', serif;
+  }
+
+  &__btn {
+    padding: 0.24rem 0.6rem;
+    background: @color-seal;
+    color: #fff;
+    border: none;
+    border-radius: 0.4rem;
+    font-size: 0.36rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 0.08rem 0.2rem fade(@color-seal, 30%);
+
+    &:active {
+      opacity: 0.9;
+    }
+  }
+}
+
+// 细品诗卷展开弹窗 (卷轴画卷展开动效)
+.poem-modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.poem-modal-paper {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;
+  background: #FAF7F0;
+  border-radius: 0.16rem;
+  box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.35);
+  padding: 0.7rem 0.5rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  border: 1px solid fade(@color-gold, 60%);
+  animation: slideUp 0.3s ease-out;
+
+  // 上下木轴
+  .poem-modal-roller {
+    position: absolute;
+    left: 0.2rem;
+    right: 0.2rem;
+    height: 0.16rem;
+    background: linear-gradient(90deg, #5c4327 0%, #a48259 50%, #5c4327 100%);
+    border-radius: 0.08rem;
+    box-shadow: 0 0.04rem 0.1rem rgba(0, 0, 0, 0.25);
+
+    &.top {
+      top: 0.18rem;
+    }
+
+    &.bottom {
+      bottom: 0.18rem;
+    }
+  }
+
+  .poem-modal-header {
+    text-align: center;
+    border-bottom: 1px dashed fade(@color-gold, 45%);
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.4rem;
+
+    .poem-modal-seal {
+      display: inline-block;
+      font-size: 0.28rem;
+      color: @color-seal;
+      border: 1px solid @color-seal;
+      padding: 0.04rem 0.14rem;
+      border-radius: 0.04rem;
+      margin-bottom: 0.15rem;
+      font-family: 'STKaiti', 'KaiTi', serif;
+    }
+
+    .poem-modal-title {
+      font-size: 0.56rem;
+      font-weight: 700;
+      color: @color-text-main;
+      margin: 0.1rem 0;
+      font-family: 'STKaiti', 'KaiTi', 'Songti SC', serif;
+    }
+
+    .poem-modal-author {
+      font-size: 0.34rem;
+      color: @color-text-sub;
+      margin: 0;
+      font-family: 'STKaiti', 'KaiTi', serif;
+    }
+  }
+
+  .poem-modal-content {
+    margin-bottom: 0.4rem;
+
+    .poem-modal-verse {
+      font-size: 0.44rem;
+      line-height: 1.8;
+      color: @color-text-main;
+      font-family: 'Songti SC', 'STSong', serif;
+      text-align: center;
+      margin: 0;
+      white-space: pre-wrap;
+    }
+  }
+
+  .poem-modal-appreciation {
+    background: fade(@color-bg, 60%);
+    border-left: 0.08rem solid @color-seal;
+    padding: 0.25rem 0.35rem;
+    border-radius: 0 0.12rem 0.12rem 0;
+    margin-bottom: 0.5rem;
+
+    .appreciation-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      font-size: 0.32rem;
+      font-weight: 600;
+      color: @color-seal;
+      margin-bottom: 0.15rem;
+
+      svg {
+        font-size: 0.36rem;
+      }
+    }
+
+    .appreciation-text {
+      font-size: 0.34rem;
+      line-height: 1.6;
+      color: @color-text-sub;
+      margin: 0;
+    }
+  }
+
+  .poem-modal-close-btn {
+    display: block;
+    width: 100%;
+    padding: 0.24rem 0;
+    background: @color-seal;
+    color: #FAF7F0;
+    border: none;
+    border-radius: 0.4rem;
+    font-size: 0.38rem;
+    font-weight: 600;
+    letter-spacing: 0.08rem;
+    cursor: pointer;
+    box-shadow: 0 0.08rem 0.2rem fade(@color-seal, 30%);
+
+    &:active {
+      opacity: 0.9;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(0.6rem); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

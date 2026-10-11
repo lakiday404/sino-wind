@@ -8,6 +8,7 @@ import Recognition from './pages/Recognition'
 import AccountSetting from './pages/AccountSetting'
 import AiChat from './pages/AiChat'
 import AuthPage from './pages/AuthPage'
+import PoemCollection from './pages/PoemCollection'
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
         </Route>
         <Route path='/accountSetting' element={<AccountSetting/>}></Route>
         <Route path='/ai-chat' element={<AiChat/>}></Route>
+        <Route path='/poem-collection' element={<PoemCollection/>}></Route>
       </Routes>
     </BrowserRouter>
   )
