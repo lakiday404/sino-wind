@@ -64,7 +64,7 @@ export default function Layout() {
               <Icon />
             </span>
             <span className="bottom-nav__label">{name}</span>
-            <i className="bottom-nav__seal" aria-hidden="true" />
+            <i className="bottom-nav__underline" aria-hidden="true" />
           </button>
         ))}
       </nav>

@@ -1,11 +1,15 @@
 import '../styles/home.less'
 import HomeCard from '../components/HomeCard'
 
+const BASE = import.meta.env.BASE_URL
+const asset = (name) => `${BASE}assets/home/${name}`
+
 // 🏮 首页【雅集】数据（阶段一为静态 Mock，阶段二接入后端真实数据）
 const poem = {
   verse: ['山水之乐，', '在乎山水之间也。'],
   from: '—— 欧阳修《醉翁亭记》',
-  seal: '雅集',
+  seal: '醉翁',
+  art: asset('poem-art.jpg'),
 }
 
 const almanac = {
@@ -18,20 +22,17 @@ const almanac = {
   termDesc: ['万物清明', '春和景明'],
 }
 
-// 四大核心雅席入口（2×2 宫格）
+// 四大核心雅席入口（2×2 宫格）：左文右图
 const yajiEntries = [
-  { key: 'appraise', title: '博古识器', desc: '识古今之器\n赏华夏之美', seal: '藏', path: '/recognition' },
-  { key: 'debate', title: '先贤论道', desc: '与李白苏轼\n共话千年风骨', seal: '道', path: '/ai-chat' },
-  { key: 'poem', title: '飞花诗令', desc: '以诗会友\n飞花成令', seal: '诗', path: '/ai' },
-  { key: 'leisure', title: '四般闲事', desc: '焚香品茗\n插花弄趣', seal: '闲', path: '/mine' },
+  { key: 'appraise', title: '博古识器', desc: ['识古今之器', '赏华夏之美'], art: asset('yaji-appraise.jpg'), path: '/recognition' },
+  { key: 'debate', title: '先贤论道', desc: ['与李白苏轼', '共话千年风骨'], art: asset('yaji-debate.jpg'), path: '/ai-chat' },
+  { key: 'poem', title: '飞花诗令', desc: ['以诗会友', '飞花成令'], art: asset('yaji-poem.jpg'), path: '/ai' },
+  { key: 'leisure', title: '四般闲事', desc: ['焚香品茗', '插花弄趣'], art: asset('yaji-leisure.jpg'), path: '/mine' },
 ]
 
 export default function Home() {
-  // 背景：宣纸山水长卷（放在 public/assets/home/，随 base 路径解析）
-  const bgUrl = `${import.meta.env.BASE_URL}assets/home/bg-paper.jpg`
-
   return (
-    <div className="home-root" style={{ backgroundImage: `url(${bgUrl})` }}>
+    <div className="home-root" style={{ backgroundImage: `url(${asset('bg-paper.jpg')})` }}>
       {/* 顶部题头 */}
       <header className="home-hero">
         <div className="home-hero__title-row">
@@ -41,33 +42,53 @@ export default function Home() {
         <p className="home-hero__sub">读千年风雅 与君共此山河</p>
       </header>
 
-      {/* 每日诗签 · 展开式横向卷轴 */}
+      {/* 每日诗签 · 展开式横向卷轴（两端木轴） */}
       <section className="home-poem">
+        <span className="home-poem__roller" />
         <div className="home-poem__tag">每日诗签</div>
+
         <div className="home-poem__body">
           <p className="home-poem__verse">
             {poem.verse.map((line) => (
               <span key={line}>{line}</span>
             ))}
+            <i className="home-poem__seal">{poem.seal}</i>
           </p>
           <p className="home-poem__from">{poem.from}</p>
-          <span className="home-poem__seal">{poem.seal}</span>
         </div>
+
+        <div className="home-poem__art" style={{ backgroundImage: `url(${poem.art})` }} />
+        <span className="home-poem__roller home-poem__roller--right" />
       </section>
 
       {/* 岁时节气与干支物候 */}
       <section className="home-almanac">
         <div className="home-almanac__col home-almanac__col--weather">
-          <p className="home-almanac__city">{almanac.city}</p>
-          <p className="home-almanac__temp">{almanac.temp}</p>
+          <p className="home-almanac__city">
+            {almanac.city}
+            <span className="home-almanac__caret">⌄</span>
+          </p>
+          <div className="home-almanac__weather">
+            <svg className="home-almanac__icon" viewBox="0 0 32 32" aria-hidden="true">
+              <circle cx="12" cy="12" r="5" />
+              <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" />
+              <path d="M20 24c3.3 0 6-2.2 6-5s-2.7-5-6-5c-1.4 0-2.7.4-3.7 1.2" />
+            </svg>
+            <span className="home-almanac__temp">{almanac.temp}</span>
+          </div>
           <p className="home-almanac__desc">{almanac.weather}</p>
         </div>
+
         <div className="home-almanac__col home-almanac__col--lunar">
           <p className="home-almanac__lunar">{almanac.lunar}</p>
           <p className="home-almanac__ganzhi">{almanac.ganzhi}</p>
         </div>
+
         <div className="home-almanac__col home-almanac__col--term">
-          <p className="home-almanac__term">{almanac.term}</p>
+          <p className="home-almanac__term">
+            {almanac.term}
+            <i className="home-almanac__seal">华风</i>
+          </p>
           <p className="home-almanac__term-desc">
             {almanac.termDesc.map((line) => (
               <span key={line}>{line}</span>

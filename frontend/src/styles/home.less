@@ -1,21 +1,59 @@
 @import '../styles/variables.less';
 
-// 🏮 首页【雅集】样式（成员 B 独占）
-// 基准视口 390px，1rem = clientWidth / 10
+// ════════════════════════════════════════════════════
+//  首页【雅集】样式（成员 B 独占）
+//  基准视口 390px，1rem = clientWidth / 10
+//  设计稿：云山竹简首页（900×1600 等比换算）
+// ════════════════════════════════════════════════════
+
+// ── 回纹描金外框（诗签卷轴 / 时令栏 / 雅席卡 通用）──
+.gu-frame(@len: 0.22rem) {
+  position: relative;
+  border: 1px solid fade(@color-gold, 48%);
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: @len;
+    height: @len;
+    border: 1px solid fade(@color-gold, 70%);
+    pointer-events: none;
+  }
+
+  // 左上回纹角
+  &::before {
+    top: 0.05rem;
+    left: 0.05rem;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  // 右下回纹角
+  &::after {
+    right: 0.05rem;
+    bottom: 0.05rem;
+    border-left: none;
+    border-top: none;
+  }
+}
+
+// ── 页面根：宣纸山水长卷背景 ──────────────────────
 .home-root {
   position: relative;
   min-height: 100vh;
-  padding: 0.62rem 0.41rem 0.4rem;
+  padding: 0.5rem 0.42rem 0.3rem;
   box-sizing: border-box;
   overflow-x: hidden;
   color: @color-text-main;
   font-family: 'Songti SC', 'STSong', 'SimSun', 'Noto Serif SC', serif;
   background-color: @color-bg;
   background-repeat: no-repeat;
-  background-position: top center;
-  background-size: 100% auto;
+  background-position: center center;
+  background-size: 100% 100%;
+  background-attachment: fixed;
 
-  // 宣纸罩层：保证山水背景上的文字可读
+  // 极淡宣纸罩层（保留山水质感，仅用于统一色调）
   &::before {
     content: '';
     position: fixed;
@@ -23,7 +61,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background: fade(@color-bg, 62%);
+    background: fade(@color-bg, 14%);
     pointer-events: none;
     z-index: 0;
   }
@@ -34,24 +72,26 @@
   }
 }
 
-// ── 顶部题头 ──────────────────────────────
+// ── 顶部题头 ─────────────────────────────────────
 .home-hero {
-  padding: 0.3rem 0 0.34rem;
+  padding: 0.18rem 0 0.3rem;
   text-align: center;
 
   &__title-row {
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    gap: 0.12rem;
+    gap: 0.1rem;
   }
 
   &__title {
     font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
-    font-size: 0.72rem;
+    font-size: 0.86rem;
     font-weight: 700;
-    letter-spacing: 0.08rem;
-    color: @color-text-main;
+    letter-spacing: 0.06rem;
+    line-height: 1.1;
+    color: #1b1c1f;
+    text-shadow: 0 0.02rem 0.08rem fade(#fdfaf3, 85%);
   }
 
   // 朱砂小印【华风】
@@ -59,65 +99,88 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 0.42rem;
-    height: 0.42rem;
-    margin-top: 0.05rem;
+    width: 0.36rem;
+    height: 0.5rem;
+    margin-top: 0.06rem;
     background: @color-seal;
     color: #fff;
-    font-size: 0.2rem;
-    line-height: 1.1;
-    letter-spacing: 0;
-    border-radius: @radius-seal;
+    font-size: 0.19rem;
+    line-height: 1.05;
     writing-mode: vertical-rl;
+    border-radius: 2px;
   }
 
   &__sub {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.16rem;
-    margin-top: 0.22rem;
-    font-size: 0.31rem;
-    letter-spacing: 0.04rem;
-    color: @color-text-sub;
+    gap: 0.14rem;
+    margin-top: 0.18rem;
+    font-size: 0.32rem;
+    letter-spacing: 0.03rem;
+    color: #3d3a35;
+    text-shadow: 0 0.01rem 0.05rem fade(#fdfaf3, 90%);
 
     &::before,
     &::after {
       content: '';
-      width: 0.9rem;
+      width: 0.86rem;
       height: 1px;
-      background: @color-border;
+      background: fade(@color-gold, 60%);
     }
   }
 }
 
-// ── 每日诗签（展开式横向卷轴）────────────────
+// ── 每日诗签 · 横向卷轴（两端木轴 + 朱砂挂签 + 右侧山水）──
 .home-poem {
+  .gu-frame(0.2rem);
   display: flex;
+  align-items: stretch;
+  height: 3.05rem;
   background: @color-card;
-  border: @border-classic;
   border-radius: @radius-card;
-  box-shadow: 0 0.12rem 0.3rem fade(#3a2f1d, 8%);
+  box-shadow: 0 0.1rem 0.26rem fade(#3a2f1d, 10%);
   overflow: hidden;
 
-  // 左侧朱砂挂签
+  // 两端木轴
+  &__roller {
+    flex: none;
+    width: 0.42rem;
+    background: linear-gradient(90deg, #c9a878 0%, #e6cfa6 45%, #c9a878 100%);
+    box-shadow: inset -1px 0 0 fade(#8a6a3d, 45%);
+
+    &--right {
+      background: linear-gradient(90deg, #c9a878 0%, #e6cfa6 55%, #c9a878 100%);
+      box-shadow: inset 1px 0 0 fade(#8a6a3d, 45%);
+    }
+  }
+
+  // 朱砂竖挂签
   &__tag {
+    flex: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.3rem 0.14rem;
+    align-self: center;
+    width: 0.5rem;
+    height: 82%;
+    margin-left: 0.1rem;
     background: @color-seal;
     color: #fff;
-    font-size: 0.3rem;
-    letter-spacing: 0.1rem;
+    font-size: 0.29rem;
+    letter-spacing: 0.06rem;
     writing-mode: vertical-rl;
     text-orientation: upright;
+    border-radius: 2px;
   }
 
   &__body {
-    position: relative;
     flex: 1;
-    padding: 0.34rem 0.34rem 0.3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.2rem 0.1rem 0.2rem 0.24rem;
+    min-width: 0;
   }
 
   &__verse {
@@ -125,202 +188,250 @@
     flex-direction: column;
     gap: 0.06rem;
     font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
-    font-size: 0.46rem;
-    line-height: 1.7;
-    letter-spacing: 0.04rem;
-    text-align: center;
-    color: @color-text-main;
+    font-size: 0.48rem;
+    line-height: 1.55;
+    letter-spacing: 0.02rem;
+    color: #1b1c1f;
+
+    // 诗句旁的闲章
+    .home-poem__seal {
+      align-self: flex-end;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 0.34rem;
+      height: 0.34rem;
+      margin-top: -0.3rem;
+      border: 1px solid @color-seal;
+      border-radius: 2px;
+      color: @color-seal;
+      font-size: 0.17rem;
+      font-style: normal;
+      line-height: 1.05;
+      writing-mode: vertical-rl;
+    }
   }
 
   &__from {
-    margin-top: 0.2rem;
+    margin-top: 0.16rem;
+    padding-left: 0.5rem;
     font-size: 0.28rem;
-    text-align: right;
-    color: @color-text-sub;
+    color: #4a463f;
   }
 
-  // 闲章戳记
-  &__seal {
-    position: absolute;
-    top: 0.28rem;
-    right: 0.3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 0.36rem;
-    height: 0.36rem;
-    border: 1px solid @color-seal;
-    border-radius: 2px;
-    color: @color-seal;
-    font-size: 0.18rem;
-    opacity: 0.85;
+  // 右侧山水小景（柔和融入宣纸）
+  &__art {
+    flex: none;
+    width: 1.05rem;
+    margin-left: 0.06rem;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: cover;
+    opacity: 0.92;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 35%);
+    mask-image: linear-gradient(to right, transparent 0%, #000 35%);
   }
 }
 
-// ── 岁时节气与干支物候 ───────────────────────
+// ── 岁时节气与干支物候 ────────────────────────────
 .home-almanac {
+  .gu-frame(0.18rem);
   display: flex;
-  align-items: stretch;
-  margin-top: 0.3rem;
-  padding: 0.26rem 0.1rem;
+  align-items: center;
+  height: 2.05rem;
+  margin-top: 0.24rem;
+  padding: 0.16rem 0.12rem;
+  box-sizing: border-box;
   background: @color-card;
-  border: @border-classic;
   border-radius: @radius-card;
+  box-shadow: 0 0.08rem 0.22rem fade(#3a2f1d, 8%);
 
   &__col {
     position: relative;
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.06rem;
-    padding: 0 0.1rem;
+    gap: 0.04rem;
+    padding: 0 0.08rem;
     text-align: center;
   }
 
-  // 各栏之间的古纸分隔线
   &__col + &__col::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 16%;
-    bottom: 16%;
+    top: 14%;
+    bottom: 14%;
     width: 1px;
-    background: @color-border;
+    background: fade(@color-gold, 35%);
   }
 
   &__city {
-    font-size: 0.28rem;
-    color: @color-text-sub;
+    position: relative;
+    font-size: 0.29rem;
+    color: #3d3a35;
+  }
+
+  &__caret {
+    margin-left: 0.05rem;
+    font-size: 0.24rem;
+    color: fade(@color-text-sub, 80%);
+  }
+
+  &__weather {
+    display: flex;
+    align-items: center;
+    gap: 0.08rem;
+  }
+
+  &__icon {
+    width: 0.62rem;
+    height: 0.62rem;
+    fill: none;
+    stroke: @color-gold;
+    stroke-width: 1.6;
+    stroke-linecap: round;
   }
 
   &__temp {
     font-size: 0.6rem;
     font-weight: 600;
     line-height: 1;
-    color: @color-text-main;
+    color: #1b1c1f;
   }
 
   &__desc {
-    font-size: 0.26rem;
+    font-size: 0.25rem;
     color: @color-text-sub;
   }
 
   &__lunar {
-    font-size: 0.3rem;
-    color: @color-text-main;
+    font-size: 0.32rem;
+    color: #1b1c1f;
   }
 
   &__ganzhi {
-    font-size: 0.26rem;
+    margin-top: 0.06rem;
+    font-size: 0.25rem;
     color: @color-text-sub;
   }
 
   &__term {
+    position: relative;
     font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
-    font-size: 0.44rem;
+    font-size: 0.46rem;
     font-weight: 600;
-    color: @color-seal;
+    line-height: 1.1;
+    color: #1b1c1f;
+  }
+
+  &__seal {
+    position: absolute;
+    top: -0.02rem;
+    right: 0.02rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 0.26rem;
+    height: 0.36rem;
+    background: @color-seal;
+    color: #fff;
+    font-size: 0.14rem;
+    font-style: normal;
+    line-height: 1.05;
+    writing-mode: vertical-rl;
+    border-radius: 2px;
   }
 
   &__term-desc {
     display: flex;
     flex-direction: column;
     gap: 0.02rem;
-    font-size: 0.26rem;
+    margin-top: 0.1rem;
+    font-size: 0.25rem;
     line-height: 1.5;
     color: @color-text-sub;
   }
 }
 
-// ── 四大核心雅席入口（2×2 宫格）───────────────
+// ── 四大核心雅席入口（2×2 宫格：左文右图）──────────
 .home-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.26rem;
-  margin-top: 0.3rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.14rem;
+  margin-top: 0.24rem;
 }
 
 .home-card {
-  position: relative;
+  .gu-frame(0.18rem);
   display: flex;
-  flex-direction: column;
-  padding: 0.3rem 0.26rem 0.34rem;
+  align-items: stretch;
+  height: 3.05rem;
   background: @color-card;
-  border: @border-classic;
   border-radius: @radius-card;
-  box-shadow: 0 0.1rem 0.26rem fade(#3a2f1d, 7%);
+  box-shadow: 0 0.08rem 0.22rem fade(#3a2f1d, 8%);
+  overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 
   &:active {
     transform: translateY(1px);
-    box-shadow: 0 0.06rem 0.16rem fade(#3a2f1d, 9%);
+    box-shadow: 0 0.04rem 0.12rem fade(#3a2f1d, 12%);
   }
 
-  // 角标闲章
-  &__seal {
-    position: absolute;
-    top: 0.22rem;
-    right: 0.22rem;
+  &__body {
+    flex: 1.05;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 0.3rem;
-    height: 0.3rem;
-    border: 1px solid @color-seal;
-    border-radius: 2px;
-    color: @color-seal;
-    font-size: 0.18rem;
-    opacity: 0.85;
+    flex-direction: column;
+    padding: 0.26rem 0.1rem 0.24rem 0.26rem;
+    min-width: 0;
   }
 
-  &__art {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 1.5rem;
-    margin-bottom: 0.16rem;
-    color: @color-bamboo;
-  }
-
-  &__svg {
-    width: 1.5rem;
-    height: 1.5rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
+  // 朱砂红标题
   &__title {
     font-family: 'Kaiti SC', 'STKaiti', 'KaiTi', serif;
-    font-size: 0.4rem;
+    font-size: 0.46rem;
     font-weight: 600;
-    color: @color-text-main;
+    line-height: 1.15;
+    letter-spacing: 0.02rem;
+    color: @color-seal;
   }
 
   &__desc {
-    margin-top: 0.1rem;
-    font-size: 0.28rem;
-    line-height: 1.6;
-    color: @color-text-sub;
-    white-space: pre-line;
+    display: flex;
+    flex-direction: column;
+    gap: 0.04rem;
+    margin-top: 0.16rem;
+    font-size: 0.3rem;
+    line-height: 1.4;
+    color: #3d3a35;
+
+    span {
+      display: block;
+    }
   }
 
-  // 朱砂小方角按钮（禁用大圆角卡通感）
+  &__chevron {
+    margin-left: 0.06rem;
+    font-size: 0.32rem;
+    color: fade(@color-text-sub, 85%);
+    font-style: normal;
+  }
+
+  // 朱砂方角按钮
   &__enter {
     align-self: flex-start;
-    margin-top: 0.22rem;
-    padding: 0.13rem 0.3rem;
+    margin-top: auto;
+    padding: 0.1rem 0.24rem;
     background: @color-seal;
     border: none;
     border-radius: @radius-seal;
     color: #fff;
     font-family: inherit;
-    font-size: 0.28rem;
+    font-size: 0.29rem;
     letter-spacing: 0.04rem;
     cursor: pointer;
   }
@@ -328,5 +439,20 @@
   &__arrow {
     font-size: 0.3rem;
     line-height: 1;
+  }
+
+  &__art {
+    flex: 0.95;
+    min-width: 0;
+    overflow: hidden;
+
+    img {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+    }
   }
 }
