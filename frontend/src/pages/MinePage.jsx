@@ -114,7 +114,7 @@ export default function MinePage() {
             <RightOutline className='shuzhai-list-item__arrow' />
           </div>
 
-          <div className='shuzhai-list-item' onClick={() => Toast.show('诗笺录筹备中')}>
+          <div className='shuzhai-list-item' onClick={() => navigate('/poem-collection')}>
             <i className='iconfont icon-zhinan'></i>
             <div className='shuzhai-list-item__content'>
               <span className='shuzhai-list-item__title'>我的诗笺</span>

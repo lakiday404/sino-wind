@@ -8,7 +8,8 @@ import Recognition from './pages/Recognition'
 import AccountSetting from './pages/AccountSetting'
 import AiChat from './pages/AiChat'
 import AuthPage from './pages/AuthPage'
-import PoemPage from './pages/PoemPage'
+import PoemPage from './pages/PoemPage' // 成员 B：古诗词天地
+import PoemCollection from './pages/PoemCollection' // 成员 C：书斋 · 我的诗笺
 
 export default function App() {
   return (
@@ -27,6 +28,8 @@ export default function App() {
         <Route path='/ai-chat' element={<AiChat/>}></Route>
         {/* 成员 B：古诗词天地（首页「飞花诗令」入口） */}
         <Route path='/poem' element={<PoemPage/>}></Route>
+        {/* 成员 C：书斋 · 我的诗笺（摘录沉淀列表） */}
+        <Route path='/poem-collection' element={<PoemCollection/>}></Route>
       </Routes>
     </BrowserRouter>
   )
