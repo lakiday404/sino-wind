@@ -1,5 +1,7 @@
 import '../styles/home.less'
 import HomeCard from '../components/HomeCard'
+import { Toast } from 'antd-mobile'
+import { DownOutline } from 'antd-mobile-icons'
 
 const BASE = import.meta.env.BASE_URL
 const asset = (name) => `${BASE}assets/home/${name}`
@@ -26,8 +28,15 @@ const almanac = {
 const yajiEntries = [
   { key: 'appraise', title: '博古识器', desc: ['识古今之器', '赏华夏之美'], art: asset('yaji-appraise.jpg'), path: '/recognition' },
   { key: 'debate', title: '先贤论道', desc: ['与李白苏轼', '共话千年风骨'], art: asset('yaji-debate.jpg'), path: '/ai-chat' },
-  { key: 'poem', title: '飞花诗令', desc: ['以诗会友', '飞花成令'], art: asset('yaji-poem.jpg'), path: '/ai' },
-  { key: 'leisure', title: '四般闲事', desc: ['焚香品茗', '插花弄趣'], art: asset('yaji-leisure.jpg'), path: '/mine' },
+  { key: 'poem', title: '飞花诗令', desc: ['以诗会友', '飞花成令'], art: asset('yaji-poem.jpg'), path: '/poem' },
+  {
+    key: 'leisure',
+    title: '四般闲事',
+    desc: ['焚香品茗', '插花弄趣'],
+    art: asset('yaji-leisure.jpg'),
+    // 阶段二：四般闲事（焚香/点茶/挂画/插花）功能筹备中，暂以古风 Toast 提示，不再跳转个人中心
+    onClick: () => Toast.show({ content: '焚香点茶筹备中，静候雅聚', duration: 2000 }),
+  },
 ]
 
 export default function Home() {
@@ -66,7 +75,8 @@ export default function Home() {
         <div className="home-almanac__col home-almanac__col--weather">
           <p className="home-almanac__city">
             {almanac.city}
-            <span className="home-almanac__caret">⌄</span>
+            {/* 图标铁律：统一使用 antd-mobile-icons 矢量图标，禁用原生字符 ⌄ */}
+            <DownOutline className="home-almanac__caret" />
           </p>
           <div className="home-almanac__weather">
             <svg className="home-almanac__icon" viewBox="0 0 32 32" aria-hidden="true">
