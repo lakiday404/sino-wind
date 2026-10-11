@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { List, Avatar, ActionSheet, ImageViewer, Toast, Popup, Button, Input } from 'antd-mobile'
 import axios from '../http'
+import { LeftOutline } from 'antd-mobile-icons'
 import '../styles/accountSetting.less'
 
 const actions = [
@@ -26,14 +27,21 @@ export default function AccountSetting() {
   const [oldPassword, setOldPassword] = useState('')
 
   useEffect(() => {
-    // 从后端获取用户信息
-    axios.get('/api/auth/info').then(res => {
-      console.log(res.data)
-      setAvatar(res.data.avatar)
-      setNickname(res.data.nickname)
-      setNewNickname(res.data.nickname)
-      setAccount(res.data.phone)
+    let active = true
+    axios.get('/api/auth/info').then(({ data }) => {
+      if (!active) return
+      setAvatar(data.avatar || '')
+      setNickname(data.nickname || '云山居士')
+      setNewNickname(data.nickname || '')
+      setAccount(data.phone || '暂未获取')
+    }).catch(() => {
+      if (!active) return
+      setAvatar('')
+      setNickname('云山居士')
+      setAccount('暂未获取')
+      Toast.show({ content: '雅士信息暂未获取，请稍后重试' })
     })
+    return () => { active = false }
   }, [])
 
   // 预览 base64 图片
@@ -128,8 +136,8 @@ export default function AccountSetting() {
     <div className='account-setting'>
       {/* 共用了 ai 识物组件的头部样式 */}
       <header className='image-capture-header'>
-        <button className='image-capture-header__back' onClick={() => navigate(-1)}>
-          <i className='iconfont icon-fanhui'></i>
+        <button className='image-capture-header__back' aria-label='返回上一页' onClick={() => navigate(-1)}>
+          <LeftOutline aria-hidden="true" />
         </button>
         <h1>账号设置</h1>
         <div className="image-capture-header__placeholder"></div>
@@ -156,7 +164,7 @@ export default function AccountSetting() {
         actions={actions}
         onClose={() => setVisible(false)}
         cancelText='取消'
-        onAction={(action, index) => {
+        onAction={(action) => {
           if (action.key === 'select') {
             // 从相册选择
             setVisible(false)

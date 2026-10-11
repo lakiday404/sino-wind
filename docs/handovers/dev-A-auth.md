@@ -79,3 +79,58 @@
 生产修改范围：六个白名单JSX/Less、public/assets/auth两张PNG、成员A交接文档、本人授权AI记录。公共文件、后端、数据库、依赖与环境配置未修改；AI记录填报人为刘霞。素材版权来源待团队核实，保留近似还原说明。
 
 剩余公共事项：code:200/code:1、Bearer/原Token、远程/本地API统一，以及真实数据库与错误码联调；这些超出成员A当前白名单，不将它们声明为完成。第三方OAuth、找回密码和正式协议文本无现有接口，仍明确提示待开放。本次前端交付可运行、可审核，任务A全量真实联调验收仍需团队契约统一。
+
+
+## Day 1 更新：2026-10-11 / 刘霞 / feat/phase2-backend
+
+### 执行依据与范围
+- 依据 main 的 TRD_DAY1.md（文档目标日期为 10-12，本次实际实施日期为 10-11）。
+- 新增授权：backend/src/config/db.js、backend/src/controllers/authController.js、backend/scripts/init-day1.js 经刘霞明确批准纳入白名单。
+- 认证原白名单内的 AuthPage.jsx、authPage.less 同步清除第三方登录切图图标及手写 SVG；品牌名保留文本，使用官方 MessageOutline 通用入口图标，不伪称已接通第三方登录。
+- 未修改 Home、识物、AiChat、MinePage、App.jsx、公共 HTTP、依赖清单及 Vite 配置；未提交或推送。
+
+### 完成项
+1. 登录注册操作图标统一来自 antd-mobile-icons；服务端生成的图形验证码是验真内容，继续作为 img 显示，不属于操作图标。
+2. AccountSetting 信息加载添加异常降级、卸载保护与官方返回图标。
+3. DeepSeek 按 libai/sushi/wangyangming/liqingzhao 注入人设；非法参数、缺少配置、上游失败有清晰响应；不在错误响应泄露上游细节。
+4. 诗泉代理适配实际作者/朝代对象与正文数组；内存缓存随机数据 2 秒、搜索数据 60 秒、降级数据 10 秒，最多 100 键，同键并发合并。随机请求在缓存窗口内可能返回同一首。
+5. 收藏从 Token 获取用户身份；参数化 SQL、事务与用户行锁保证并发重复收藏只写一次、计数只加一次；写入或计数失败回滚。
+6. 收藏列表支持分页和用户隔离；用户信息接口返回四项统计并停止打印用户信息。
+7. 本地 MySQL 初始化已执行两次，重复执行不破坏已有数据；已确认四项统计列存在。保留文档指定的 12/36/48/玖阶默认值，不能将这些初始值宣称为真实历史行为总量。
+
+### 给成员 B/C 的接口契约
+- GET /api/poem/random → { code:1, data:{ id,title,author,dynasty,content:string[],appreciation }, source, degraded }。
+- GET /api/poem/search?q=关键词（兼容 keyword）→ { code:1, data:诗词数组, source, degraded }；关键词 1–100 字。
+- POST /api/poem/collect：沿用现有原始 JWT Authorization 头；body 可为诗词对象或 {poem:对象}，author/dynasty 为字符串，content 为数组或正文字符串。
+- 首次收藏 → { code:1,message:'已摘录入卷',id,collected:true }；重复 → { code:1,message:'已在诗笺中',id,collected:false }，不再次加计数。
+- GET /api/poem/collection?page=1&pageSize=20 → { code:1,data:收藏记录数组,pagination:{page,pageSize,total} }；收藏正文是数据库字符串，最多每页 50 条。
+- GET /api/auth/info：沿用原顶层字段，新增 appraise_count/debate_count/poem_count/rank_level。
+- 诗泉当前实际响应不含赏析，正常代理 appreciation 为 ''；页面应显示“暂无赏析”，不得把本地简析当作上游返回。source=local-fallback 时明确标识降级内容。
+- 四大先贤 ID 与观藏现有定义一致；message 上限 4000 字。
+
+### 两轮审查与验证
+- 第一轮：逐项对照文档与白名单，检查图标来源、先贤 ID、实际诗泉字段、SQL 初始化兼容性和公共文件边界。
+- 第二轮：真实 Koa 入口与本地 MySQL 验证，缺失 Token、参数错误、四请求并发重复收藏、统计从 48 到 49、非法用户、分页、用户隔离、上游离线降级、同键请求合并、计数失败回滚均通过。
+- 诗泉真实随机与真实搜索验证通过（搜索返回 20 条）；测试用户与其收藏在结束后清理。
+- 四个人设用 OpenAI SDK 替身检查注入内容与缺少配置的响应，未调用付费 DeepSeek；不标记真实模型调用验收完成。
+- 4 个相关 JSX 的 ESLint 通过，完整前端构建通过（1013 模块）。后端新增代码 Node 语法检查通过。
+- 验证脚本保存在本次 Codex 输出目录，不加入队友文件或依赖配置。
+
+### 本人启动与验收
+1. 在本任务工作区 backend 目录运行 npm.cmd ci（本次已安装）与 node scripts/init-day1.js。
+2. node src/index.js 启动正式 3000 服务；如端口占用先确认旧服务来源，不改生产端口。
+3. frontend 目录 npm.cmd run dev，访问终端显示地址的 /dist/login。
+4. 当前公共 HTTP 仍指向云端 120.26.186.48:3000；浏览器前端不会自动调用本地新后端。跨前端联调需由团队统一公共请求地址或部署后端，不私改公共文件。
+5. backend/.env.local 为被 Git 忽略的本地配置，沿用原主仓库现有配置，不随代码上传。
+
+### 待团队合流验收
+- 成员 B 页面与成员 C 书斋全流程尚未在本次操作中验收；本次完成成员 A 后端闭环，不能宣称 Day 1 全队完成。
+- 公共认证 JWT 秘钥、HTTP 地址和错误拦截器沿用现有基建，生产安全整改需要统一契约与白名单。
+- Git 分支已由刘霞创建，代码待本人审阅、提交、推送与 PR。
+
+
+### 提交前复审补充（2026-10-11）
+- 刘霞本人 curl 验证随机和搜索均返回真实诗泉数据，degraded=false。
+- 已确认第三方将多名宋代作者误标为唐；代理保留原字段，不编造批量修正，随机/搜索响应新增 dataNotice，正常诗词新增 metadataVerified:false，供前端提示文化数据待核验。该问题仍是正式内容验收限制。
+- 补充收藏正文数组的字符串类型校验及 MySQL TEXT 的 UTF-8 字节长度限制；缺少朝代时写“待考”，不擅自认定唐代。表结构仍遵循任务书默认值。
+- 本次仅完成成员 A 的实现和本地后端验证；真实模型调用及 B/C 页面全流程仍未验收。提交 PR 时需披露这些限制。

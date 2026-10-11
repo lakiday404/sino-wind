@@ -58,8 +58,8 @@
     input { min-width:0; width:100%; padding:2px 0; border:0; background:transparent; outline:0; color:@color-text-main; font-family:system-ui,sans-serif; font-size:clamp(12px,calc(var(--auth-u) * 3.1),19px); }
     input::placeholder { color:@color-text-sub; opacity:.75; }
   }
-  .auth-field-icon { width:calc(var(--auth-u) * 3.5); flex-shrink:0; display:flex; align-items:center; justify-content:center; svg { width:100%; height:auto; stroke-width:2.2; } }
-  .auth-eye { flex-shrink:0; padding:0; border:0; background:transparent; color:@color-text-sub; svg { width:calc(var(--auth-u) * 3.4); height:auto; } }
+  .auth-field-icon { width:20px; color:@color-gold; flex-shrink:0; display:flex; align-items:center; justify-content:center; svg { width:100%; height:auto;  } }
+  .auth-eye { flex-shrink:0; padding:0; border:0; background:transparent; color:@color-seal; svg { width:20px; height:20px; } }
   .auth-error { margin:7px 0; font:12px/1.5 sans-serif; color:@color-seal; }
   .auth-submit { position:relative; display:block; width:100%; min-height:calc(var(--auth-u) * 11.2); margin-top:calc(var(--auth-u) * 2.3); border:3px double @color-gold; border-radius:@radius-card; background:radial-gradient(ellipse at 55% 40%, lighten(@color-seal,8%), @color-seal 75%); color:@color-card; font-size:calc(var(--auth-u) * 4.7); letter-spacing:.13em; box-shadow:0 3px 7px fade(@color-seal,20%);
     &::before,&::after { content:''; position:absolute; top:12%; bottom:12%; width:23%; opacity:.25; background:url('/assets/auth/reference-login.png') no-repeat; background-size:calc(var(--auth-u) * 100) calc(var(--auth-u) * 177.8); background-position:calc(var(--auth-u) * -17) calc(var(--auth-u) * -107); pointer-events:none; }
@@ -70,11 +70,8 @@
     &::before,&::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,transparent,@color-gold); } &::after { transform:rotate(180deg); }
   }
   .auth-social { display:flex; justify-content:center; gap:calc(var(--auth-u) * 3.7); }
-  .auth-social button { width:calc(var(--auth-u) * 9.2); height:calc(var(--auth-u) * 9.2); padding:0; border:1px solid fade(@color-gold,75%); border-radius:50%; background:@color-card url('/assets/auth/reference-login.png') no-repeat; background-size:calc(var(--auth-u) * 100) calc(var(--auth-u) * 177.8);
-    &:nth-child(1) { background-position:calc(var(--auth-u) * -32.5) calc(var(--auth-u) * -127.5); }
-    &:nth-child(2) { background-position:calc(var(--auth-u) * -45.5) calc(var(--auth-u) * -127.5); }
-    &:nth-child(3) { background-position:calc(var(--auth-u) * -58.5) calc(var(--auth-u) * -127.5); }
-    svg,span { display:none; }
+  .auth-social button { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; width:calc(var(--auth-u) * 9.2); height:calc(var(--auth-u) * 9.2); padding:0; border:1px solid fade(@color-gold,75%); border-radius:50%; background:@color-card; color:@color-seal;
+    svg { font-size:20px; } span { font-size:10px; }
   }
   .auth-consent { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:2px; margin:calc(var(--auth-u) * 4.2) calc(var(--auth-u) * -2) 0; color:@color-text-sub; font-family:system-ui,sans-serif; font-size:calc(var(--auth-u) * 2.15); line-height:1.7; }
   .auth-consent label { display:inline-flex; align-items:center; cursor:pointer; }
