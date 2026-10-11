@@ -1,135 +1,87 @@
-import React, { useEffect, useState } from 'react'
-import '../styles/register.less'
-import axios from '../http'
+import { AuthIcon } from './Login'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Toast } from 'antd-mobile'
+import axios from '../http'
+import '../styles/register.less'
 
-
-export default function Register({ changeActiveTab }) {
-  const [nickname, setNickname] = useState('')
-  const [phone, setPhone] = useState('')
-  const [captchaCode, setCaptchaCode] = useState('')
-  const [password, setPassword] = useState('')
-  const [captchaId, setCaptchaId] = useState('')
-  const [captchaSvg, setCaptchaSvg] = useState('')
+export default function Register({ changeActiveTab, agreed = false }) {
+  const [form, setForm] = useState({ nickname: '', phone: '', password: '', captchaCode: '' })
+  const [captcha, setCaptcha] = useState(null)
+  const [captchaLoading, setCaptchaLoading] = useState(false)
   const [loading, setLoading] = useState(false)
-
-  async function loadCaptcha() {
-    const res = await axios.get('/api/auth/captcha')
-    setCaptchaId(res.data.captchaId)
-    setCaptchaSvg(res.data.captchaSvg)
-  }
-
-  useEffect(() => {
-    loadCaptcha()
+  const [visible, setVisible] = useState(false)
+  const [error, setError] = useState('')
+  const busy = useRef(false)
+  const requestId = useRef(0)
+  const mounted = useRef(false)
+  const loadCaptcha = useCallback(async () => {
+    const current = ++requestId.current
+    setCaptcha(null)
+    setCaptchaLoading(true)
+    setForm((previous) => ({ ...previous, captchaCode: '' }))
+    try {
+      const { data } = await axios.get('/api/auth/captcha')
+      if (current !== requestId.current) return
+      if (typeof data?.captchaId !== 'string' || !data.captchaId.trim() || typeof data.captchaSvg !== 'string' || !data.captchaSvg.includes('<svg')) throw new Error('验证码响应异常')
+      setCaptcha({ id: data.captchaId, image: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(data.captchaSvg) })
+    } catch {
+      if (current === requestId.current) setError('验证码加载失败，请点击右侧重新获取')
+    } finally {
+      if (current === requestId.current) setCaptchaLoading(false)
+    }
   }, [])
-
-  const handleSubmit = async(e) => { 
-    e.preventDefault()
-    if (!nickname || !phone || !captchaCode || !password) {
-      Toast.show({
-        content: '请输入完整信息',
-        icon: 'fail'
-      })
-      return
-    }
-
-    // 校验格式
-    const phoneRegex = /^1[3-9]\d{9}$/;
-    const majorChineseEmailRegex = /^[a-zA-Z0-9._%+-]+@(?:qq\.com|163\.com|126\.com|sina\.(?:com|cn)|sohu\.com|yeah\.net|gmail\.com|hotmail\.com|outlook\.com|foxmail\.com|aliyun\.com)$/i;
-    if (!phoneRegex.test(phone) && !majorChineseEmailRegex.test(phone)) { // 手机号码非法
-      Toast.show({
-        icon: 'fail',
-        content: '请输入正确的账号'
-      })
-      return
-    }
-
-    // loading
+  useEffect(() => {
+    mounted.current = true
+    loadCaptcha()
+    return () => { mounted.current = false; requestId.current += 1 }
+  }, [loadCaptcha])
+  const update = (key) => (event) => setForm((previous) => ({ ...previous, [key]: event.target.value }))
+  async function submit(event) {
+    event.preventDefault()
+    if (busy.current) return
+    const nickname = form.nickname.trim(), phone = form.phone.trim()
+    const phoneRegex = /^1[3-9]\d{9}$/
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@(?:qq\.com|163\.com|126\.com|sina\.(?:com|cn)|gmail\.com|foxmail\.com)$/i
+    if (!nickname || nickname.length > 50) return setError('雅号须为 1–50 位字符')
+    if (!phoneRegex.test(phone) && !emailRegex.test(phone)) return setError('请输入有效手机号或支持的邮箱')
+    if (!/^.{6,20}$/.test(form.password)) return setError('通行密押须为 6–20 位字符')
+    if (!captcha || !form.captchaCode.trim()) return setError('请获取并填写图形验真码')
+    if (!agreed) return setError('请先勾选同意用户协议与隐私政策')
+    busy.current = true
     setLoading(true)
-
-    // 发请求
-    const res = await axios.post('/api/auth/register', {
-      nickname,
-      phone,
-      captchaCode,
-      password,
-      captchaId
-    })
-    // console.log(res);
-    Toast.show({
-      content: res.data.message,
-      icon: 'success'
-    })
-
-    changeActiveTab('login', {phone, password})
-
-
+    setError('')
+    try {
+      await axios.post('/api/auth/register', { nickname, phone, password: form.password, captchaId: captcha.id, captchaCode: form.captchaCode.trim() })
+      if (!mounted.current) return
+      Toast.show({ content: '缔约成功，请落座入席' })
+      changeActiveTab('login', { phone, password: form.password })
+    } catch (failure) {
+      if (!mounted.current) return
+      setError(failure?.response?.data?.message || failure?.data?.message || '缔约未成功，请稍后重试')
+      await loadCaptcha()
+    } finally { busy.current = false; if (mounted.current) setLoading(false) }
   }
-
   return (
-    <div>
-      <form className='register-form' onSubmit={handleSubmit}>
-        <div className="register-form__group">
-          <i className='iconfont icon-zhanghao'></i>
-          <input
-            type="text"
-            placeholder='请输入昵称'
-            className='register-form__input'
-            value={nickname}
-            onChange={(e) => {
-              setNickname(e.target.value)
-            }}
-          />
-        </div>
-        <div className="register-form__group">
-          <i className='iconfont icon-shoujihaoma-mian'></i>
-          <input
-            type="text"
-            placeholder='请输入手机号或邮箱'
-            className='register-form__input'
-            value={phone}
-            onChange={(e) => {
-              setPhone(e.target.value)
-            }}
-          />
-        </div>
-        <div className="register-form__group register-form__group--captcha">
-          <i className='iconfont icon-anquan'></i>
-          <input
-            type="text"
-            placeholder='请输入验证码'
-            className='register-form__input register-form__input--captcha'
-            value={captchaCode}
-            onChange={(e) => {
-              setCaptchaCode(e.target.value)
-            }}
-            maxLength={4}
-          />
-          <div 
-            className="register-form__captcha-img" 
-            title='点击刷新验证码'
-            dangerouslySetInnerHTML={{__html: captchaSvg}}
-            onClick={loadCaptcha}
-          ></div>
-        </div>
-        <div className="register-form__group">
-          <i className='iconfont icon-mima'></i>
-          <input
-            type="password"
-            placeholder='请设置密码'
-            className='register-form__input'
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value)
-            }}
-          />
-        </div>
-
-        <button type='submit' disabled={loading} className='register-form__submit'>
-          {loading ? '注册中...' : '注册'}
+    <form className="auth-register" onSubmit={submit} noValidate aria-busy={loading}>
+      <label className="auth-field"><span className="auth-field-icon" aria-hidden="true"><AuthIcon name="account" /></span><span className="auth-sr-only">拟定雅号</span>
+        <input name="nickname" autoComplete="nickname" maxLength={50} placeholder="拟定雅号" value={form.nickname} onChange={update('nickname')} disabled={loading} />
+      </label>
+      <label className="auth-field"><span className="auth-field-icon" aria-hidden="true"><AuthIcon name="phone" /></span><span className="auth-sr-only">手机号或信箱</span>
+        <input name="username" autoComplete="username" inputMode="email" placeholder="请输入手机号" value={form.phone} onChange={update('phone')} disabled={loading} />
+      </label>
+      <div className="auth-field auth-captcha-field"><label className="auth-sr-only" htmlFor="register-captcha">图形验真码</label>
+        <span className="auth-field-icon" aria-hidden="true"><AuthIcon name="shield" /></span>
+        <input id="register-captcha" autoComplete="off" maxLength={4} placeholder="请输入验证码" value={form.captchaCode} onChange={update('captchaCode')} disabled={loading || captchaLoading} />
+        <button type="button" className="auth-captcha" disabled={loading || captchaLoading} onClick={() => { setError(''); loadCaptcha() }} aria-label="刷新图形验证码" title="点击刷新">
+          {captchaLoading ? '绘制中…' : captcha ? <img src={captcha.image} alt="图形验证码，点击刷新" /> : '获取验真码'}
         </button>
-
-      </form>
-    </div>
+      </div>
+      <div className="auth-field"><span className="auth-field-icon" aria-hidden="true"><AuthIcon name="lock" /></span><label className="auth-sr-only" htmlFor="register-password">设置通行密押</label>
+        <input id="register-password" name="password" autoComplete="new-password" type={visible ? 'text' : 'password'} placeholder="请设置密码" value={form.password} onChange={update('password')} disabled={loading} />
+        <button type="button" className="auth-eye" aria-label={visible ? '隐藏密码' : '显示密码'} aria-pressed={visible} onClick={() => setVisible(!visible)}><AuthIcon name={visible ? "eye" : "hidden"} /></button>
+      </div>
+      {error && <p className="auth-error" role="alert">{error}</p>}
+      <button type="submit" className="auth-submit" disabled={loading || captchaLoading || !captcha}>{loading ? '正在缔约…' : '完成缔约'}</button>
+    </form>
   )
 }
