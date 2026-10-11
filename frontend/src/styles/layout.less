@@ -1,6 +1,7 @@
 @import '../styles/variables.less';
 
 // 🏮 公共布局与底部导航（成员 B 独占）
+// 图标：设计稿切图 assets/tabbar/*（以 mask + currentColor 着色）
 .layout {
   min-height: 100vh;
   background: @color-bg;
@@ -19,11 +20,35 @@
   display: flex;
   align-items: center;
   height: 1.52rem;
-  padding: 0 0.3rem calc(env(safe-area-inset-bottom) + 0.06rem);
+  padding: 0 0.36rem calc(env(safe-area-inset-bottom) + 0.06rem);
   box-sizing: border-box;
   background: fade(@color-card, 96%);
   border-top: 1px solid fade(@color-gold, 40%);
   box-shadow: 0 -0.06rem 0.24rem fade(#3a2f1d, 7%);
+
+  // 两端回纹描金角（对齐设计稿导航栏装饰）
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0.12rem;
+    width: 0.2rem;
+    height: 0.2rem;
+    border: 1px solid fade(@color-gold, 70%);
+    pointer-events: none;
+  }
+
+  &::before {
+    left: 0.1rem;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  &::after {
+    right: 0.1rem;
+    border-left: none;
+    border-bottom: none;
+  }
 
   &__item {
     flex: 1;
@@ -31,7 +56,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.04rem;
+    gap: 0.05rem;
     padding: 0;
     background: none;
     border: none;
@@ -40,7 +65,7 @@
     cursor: pointer;
     transition: color 0.2s ease;
 
-    // 激活态：朱砂红器物图标 + 朱砂下划线
+    // 激活态：朱砂红图标 + 朱砂下划线
     &.is-active {
       color: @color-seal;
 
@@ -51,21 +76,17 @@
     }
   }
 
+  // 器物图标：切图作为 mask，颜色由 currentColor 决定
   &__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 0.62rem;
-  }
-
-  .nav-icon {
-    width: 0.62rem;
-    height: 0.62rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.4;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    width: 0.6rem;
+    height: 0.48rem;
+    background-color: currentColor;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
   }
 
   &__label {
@@ -77,7 +98,7 @@
   &__underline {
     width: 0.56rem;
     height: 0.045rem;
-    margin-top: 0.06rem;
+    margin-top: 0.05rem;
     background: @color-seal;
     border-radius: 1px;
     opacity: 0;
