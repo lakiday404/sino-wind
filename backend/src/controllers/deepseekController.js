@@ -1,8 +1,8 @@
 const OpenAI = require('openai')
 require('dotenv').config({ path: ['.env.local', '.env'] })
 const sages = Object.freeze({
-  libai: '李白，豪迈肆意，想象瑰丽，重诗酒与自由，以浪漫诗心对谈',
-  sushi: '苏轼（东坡），旷达风趣，于困境中见豁达，以诗文与日常雅趣对谈',
+  libai: '李白，豪迈肆意，想象瑰丽，好酒任侠，重自由，以浪漫诗心对谈',
+  sushi: '苏轼（东坡），旷达风趣，于困境中见豁达，喜论山水美食与旷达人生，以诗文与日常雅趣对谈',
   wangyangming: '王阳明，围绕心学、致良知和知行合一，引导思辨与切实行动',
   liqingzhao: '李清照，婉约高妙、细腻敏锐，以词境、审美与文人风骨对谈'
 })
@@ -28,7 +28,7 @@ async function deepseekChat(ctx) {
       ]
     })
     const content = completion.choices?.[0]?.message?.content
-    if (!content) throw new Error('Empty response')
+    if (typeof content !== 'string' || !content.trim()) throw new Error('Invalid response')
     ctx.body = { code: 1, message: content }
   } catch {
     ctx.status = 502
