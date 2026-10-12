@@ -10,7 +10,8 @@ function normalize(poem) {
   const result = { id: String(poem.id ?? ''), title: poem.title, author: typeof poem.author === 'string' ? poem.author : poem.author?.name,
     dynasty: typeof poem.dynasty === 'string' ? poem.dynasty : poem.dynasty?.name,
     content: Array.isArray(poem.content) ? poem.content : typeof poem.content === 'string' ? poem.content.split(/\r?\n/) : [], appreciation: typeof poem.appreciation === 'string' ? poem.appreciation : '', metadataVerified: false }
-  if (typeof result.title !== 'string' || !result.title.trim() || typeof result.author !== 'string' || !result.author.trim() || !result.content.length || result.content.some(line => typeof line !== 'string' || !line.trim())) throw Error('Invalid upstream poem')
+  result.dynasty = typeof result.dynasty === 'string' && result.dynasty.trim() ? result.dynasty.trim() : '待考'
+  if (!result.id || result.id.length > 64 || typeof result.title !== 'string' || !result.title.trim() || typeof result.author !== 'string' || !result.author.trim() || !result.content.length || result.content.some(line => typeof line !== 'string' || !line.trim())) throw Error('Invalid upstream poem')
   return result
 }
 async function query(kind, keyword = '') {
@@ -18,11 +19,13 @@ async function query(kind, keyword = '') {
   const saved = cache.get(key)
   if (saved && saved.expires > Date.now()) return saved.value
   if (pending.has(key)) return pending.get(key)
+  // 不同关键词也受并发上限保护，避免绕过同键缓存压垮上游。
+  if (pending.size >= 10) { const error = new Error('Poem service busy'); error.code = 'POEM_BUSY'; throw error }
   const request = (async () => {
     let value
     try {
       const response = await axios.get('https://poetry.palemoky.com' + (kind === 'random' ? '/api/poems/random' : '/api/search'), {
-        params: { lang: 'zh-Hans', ...(kind === 'search' ? { q: keyword } : {}) }, timeout: 4000, maxContentLength: 2 * 1024 * 1024
+        params: { lang: 'zh-Hans', ...(kind === 'search' ? { q: keyword } : {}) }, timeout: 4000, signal: AbortSignal.timeout(4000), maxContentLength: 2 * 1024 * 1024
       })
       const data = response.data.data
       if (kind === 'random') value = { data: normalize(data), source: 'shiquan', degraded: false }
@@ -42,16 +45,28 @@ async function query(kind, keyword = '') {
   try { return await request } finally { pending.delete(key) }
 }
 const dataNotice = '第三方朝代字段存在已知错误，文化信息尚未经逐条核验；缺少赏析时请展示暂无赏析'
-async function random(ctx) { ctx.body = { code: 1, ...(await query('random')), dataNotice } }
+function present(poem) {
+  const paragraphs = Array.isArray(poem.content) ? poem.content : []
+  return { ...poem, paragraphs, bgArt: '', snippet: paragraphs.join('').slice(0, 100) }
+}
+async function random(ctx) {
+  try {
+    const value = await query('random')
+    ctx.body = { code: 1, message: '获取成功', ...value, data: present(value.data), dataNotice }
+  } catch { ctx.status = 429; ctx.body = { code: 0, message: '诗泉请求繁忙，请稍后再试' } }
+}
 async function search(ctx) {
   const q = ctx.query.q ?? ctx.query.keyword
   if (typeof q !== 'string' || !q.trim() || q.length > 100) { ctx.status = 400; ctx.body = { code: 0, message: '请输入 1–100 字的关键词' }; return }
-  ctx.body = { code: 1, ...(await query('search', q.trim())), dataNotice }
+  try {
+    const value = await query('search', q.trim())
+    ctx.body = { code: 1, message: '搜索成功', ...value, data: value.data.map(present), dataNotice }
+  } catch { ctx.status = 429; ctx.body = { code: 0, message: '诗泉请求繁忙，请稍后再试' } }
 }
 async function collect(ctx) {
   const body = ctx.request.body || {}, input = body.poem || body
   const content = Array.isArray(input.content) ? input.content.join('\n') : input.content
-  const poemId = input.poem_id ?? input.id ?? null
+  const poemId = input.poemId ?? input.poem_id ?? input.id ?? null
   const valid = (x, limit) => typeof x === 'string' && x.trim().length > 0 && x.length <= limit
   if ((Array.isArray(input.content) && input.content.some(line => typeof line !== 'string')) ||
       !valid(input.title, 100) || !valid(input.author, 50) || !valid(content, 20000) || (typeof content === 'string' && Buffer.byteLength(content, 'utf8') > 60000) ||
@@ -63,15 +78,16 @@ async function collect(ctx) {
   try {
     connection = await db.getConnection()
     await connection.beginTransaction()
-    const [users] = await connection.execute('SELECT id FROM users WHERE id = ? FOR UPDATE', [ctx.userId])
+    const [users] = await connection.execute('SELECT id, poem_count FROM users WHERE id = ? FOR UPDATE', [ctx.userId])
     if (!users.length) { await connection.rollback(); ctx.status = 401; ctx.body = { code: 0, message: '请重新入席' }; return }
-    const [existing] = await connection.execute('SELECT id FROM user_poems WHERE user_id = ? AND title = ? AND author = ? AND content = ? LIMIT 1', [ctx.userId, input.title.trim(), input.author.trim(), content])
-    if (existing.length) { await connection.commit(); ctx.body = { code: 1, message: '已在诗笺中', id: existing[0].id, collected: false }; return }
+    const [existing] = await connection.execute('SELECT id FROM user_poems WHERE user_id = ? AND (poem_id = ? OR (title = ? AND author = ? AND content = ?)) LIMIT 1', [ctx.userId, poemId == null ? null : String(poemId), input.title.trim(), input.author.trim(), content])
+    if (existing.length) { await connection.commit(); ctx.body = { code: 1, message: '已在诗笺中', newPoemCount: users[0].poem_count, id: existing[0].id, collected: false }; return }
     const [result] = await connection.execute('INSERT INTO user_poems (user_id, poem_id, title, author, dynasty, content, appreciation) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [ctx.userId, poemId == null ? null : String(poemId), input.title.trim(), input.author.trim(), input.dynasty?.trim() || '待考', content, input.appreciation || null])
     await connection.execute('UPDATE users SET poem_count = COALESCE(poem_count, 0) + 1 WHERE id = ?', [ctx.userId])
+    const [[updated]] = await connection.execute('SELECT poem_count FROM users WHERE id = ?', [ctx.userId])
     await connection.commit()
-    ctx.body = { code: 1, message: '已摘录入卷', id: result.insertId, collected: true }
+    ctx.body = { code: 1, message: '已成功摘录入卷', newPoemCount: updated.poem_count, id: result.insertId, collected: true }
   } catch {
     if (connection) await connection.rollback().catch(() => {})
     ctx.status = 503; ctx.body = { code: 0, message: '摘录服务暂不可用，请稍后重试' }
@@ -86,7 +102,13 @@ async function collection(ctx) {
   try {
     const [rows] = await db.query('SELECT id, poem_id, title, author, dynasty, content, appreciation, created_at FROM user_poems WHERE user_id = ? ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?', [ctx.userId, pageSize, (page - 1) * pageSize])
     const [[total]] = await db.execute('SELECT COUNT(*) AS total FROM user_poems WHERE user_id = ?', [ctx.userId])
-    ctx.body = { code: 1, data: rows, pagination: { page, pageSize, total: total.total } }
+    ctx.body = { code: 1, message: '获取成功', data: rows, pagination: { page, pageSize, total: total.total } }
   } catch { ctx.status = 503; ctx.body = { code: 0, message: '诗笺暂未获取，请稍后重试' } }
 }
-module.exports = { random, search, collect, collection }
+async function myList(ctx) {
+  try {
+    const [rows] = await db.execute('SELECT id, title, author, dynasty, content, created_at FROM user_poems WHERE user_id = ? ORDER BY created_at DESC, id DESC', [ctx.userId])
+    ctx.body = { code: 1, message: '获取成功', data: rows }
+  } catch { ctx.status = 503; ctx.body = { code: 0, message: '诗笺暂未获取，请稍后重试' } }
+}
+module.exports = { random, search, collect, collection, myList }
